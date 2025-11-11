@@ -1,0 +1,269 @@
+﻿@page "/company/activities"
+@using CRUDManagmentWeb.Models.Activity
+@using CRUDManagmentWeb.Models.Company
+@inject CRUDManagmentWeb.Services.ActivityService ActivityService
+@inject CRUDManagmentWeb.Services.CompanyService CompanyService
+@inject IJSRuntime JS
+@using CRUDManagmentWeb.Components.Pages.Auth
+@rendermode InteractiveServer
+
+<ProtectedPage>
+    <h3 class="mb-4">🎯 Gestión de Actividades</h3>
+
+    <!-- Selección de empresa -->
+    <div class="mb-3">
+        <label class="form-label">Selecciona una compañía</label>
+        <InputSelect class="form-select" @bind-Value="selectedCompanyId" @onchange="OnCompanyChanged">
+            <option value="0">-- Selecciona --</option>
+            @foreach (var c in companies)
+            {
+                <option value="@c.Id">@c.Name</option>
+            }
+        </InputSelect>
+    </div>
+
+    @if (selectedCompanyId > 0)
+    {
+        <!-- FORMULARIO -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">@((isEditMode ? "Editar Actividad" : "Agregar Nueva Actividad"))</h5>
+
+                <EditForm Model="@activityForm" OnValidSubmit="@HandleSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Título</label>
+                            <InputText class="form-control" @bind-Value="activityForm.Title" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Descripción</label>
+                            <InputText class="form-control" @bind-Value="activityForm.Description" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ubicación</label>
+                            <InputText class="form-control" @bind-Value="activityForm.LocationText" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Inicio</label>
+                            <InputDate class="form-control" @bind-Value="activityForm.StartAt" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fin</label>
+                            <InputDate class="form-control" @bind-Value="activityForm.EndAt" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Capacidad</label>
+                            <InputNumber class="form-control" @bind-Value="activityForm.Capacity" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Precio</label>
+                            <InputNumber class="form-control" @bind-Value="activityForm.Price" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Moneda</label>
+                            <InputText class="form-control" @bind-Value="activityForm.Currency" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Estado</label>
+                            <InputText class="form-control" @bind-Value="activityForm.Status" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Lista de espera</label><br />
+                            <InputCheckbox @bind-Value="activityForm.AllowWaitlist" />
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <button class="btn btn-primary me-2" type="submit">
+                            @(isEditMode ? "Actualizar" : "Crear")
+                        </button>
+                        @if (isEditMode)
+                        {
+                            <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
+                        }
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+
+        <!-- TABLA -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">📋 Actividades de la Compañía</h5>
+
+                @if (activities == null)
+                {
+                    <p>Cargando...</p>
+                }
+                else if (!activities.Any())
+                {
+                    <p>No hay actividades registradas.</p>
+                }
+                else
+                {
+                    <table class="table table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Ubicación</th>
+                                <th>Inicio</th>
+                                <th>Fin</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var a in activities)
+                            {
+                                <tr>
+                                    <td>@a.Title</td>
+                                    <td>@a.LocationText</td>
+                                    <td>@(a.StartAt?.ToString("dd/MM/yyyy") ?? "")</td>
+                                    <td>@(a.EndAt?.ToString("dd/MM/yyyy") ?? "")</td>
+                                    <td>@($"{a.Price} {a.Currency}")</td>
+                                    <td>@a.Status</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-warning me-2" @onclick="@(() => EditActivity(a))">✏️</button>
+                                        <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteActivity(a.Id))">🗑️</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    }
+</ProtectedPage>
+
+@code {
+    private List<CompanyDto> companies = new();
+    private List<ActivityDto> activities = new();
+    private ActivityFormModel activityForm = new();
+    private int selectedCompanyId = 0;
+    private bool isEditMode = false;
+    private int editActivityId;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            companies = await CompanyService.GetAllAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnCompanyChanged(ChangeEventArgs e)
+    {
+        selectedCompanyId = int.Parse(e.Value?.ToString() ?? "0");
+        await LoadActivities();
+    }
+
+    private async Task LoadActivities()
+    {
+        activities = await ActivityService.GetAllAsync(selectedCompanyId);
+        Console.WriteLine($"✅ Actividades cargadas: {activities.Count}");
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmit()
+    {
+        bool success;
+
+        if (isEditMode)
+        {
+            var updateRequest = new UpdateActivityRequest(
+                activityForm.Title,
+                activityForm.Description,
+                activityForm.LocationText,
+                activityForm.Latitude,
+                activityForm.Longitude,
+                activityForm.StartAt,
+                activityForm.EndAt,
+                activityForm.Capacity,
+                activityForm.Price,
+                activityForm.Currency,
+                activityForm.Status,
+                activityForm.AllowWaitlist
+ );
+
+            success = await ActivityService.UpdateAsync(editActivityId, updateRequest);
+        }
+        else
+        {
+            var createRequest = new CreateActivityRequest(
+                activityForm.Title,
+                activityForm.Description,
+                activityForm.LocationText,
+                activityForm.Latitude,
+                activityForm.Longitude,
+                activityForm.StartAt,
+                activityForm.EndAt,
+                activityForm.Capacity,
+                activityForm.Price,
+                activityForm.Currency,
+                activityForm.Status,
+                activityForm.AllowWaitlist
+            );
+            success = await ActivityService.CreateAsync(selectedCompanyId, createRequest);
+        }
+
+        if (success)
+        {
+            await JS.InvokeVoidAsync("alert", "✅ Actividad guardada correctamente");
+            await LoadActivities();
+            CancelEdit();
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "❌ Error al guardar la actividad");
+        }
+    }
+
+    private void EditActivity(ActivityDto activity)
+    {
+        isEditMode = true;
+        editActivityId = activity.Id;
+
+        activityForm = new ActivityFormModel
+        {
+            Title = activity.Title,
+            Description = activity.Description,
+            LocationText = activity.LocationText,
+            Latitude = activity.Latitude,
+            Longitude = activity.Longitude,
+            StartAt = activity.StartAt ?? DateTime.Today,
+            EndAt = activity.EndAt ?? DateTime.Today.AddDays(1),
+            Capacity = activity.Capacity,
+            Price = activity.Price,
+            Currency = activity.Currency,
+            Status = activity.Status,
+            AllowWaitlist = activity.AllowWaitlist
+        };
+    }
+
+    private void CancelEdit()
+    {
+        isEditMode = false;
+        editActivityId = 0;
+        activityForm = new();
+    }
+
+    private async Task DeleteActivity(int id)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", "¿Eliminar esta actividad?");
+        if (confirmed)
+        {
+            var success = await ActivityService.DeleteAsync(id);
+            if (success)
+            {
+                await JS.InvokeVoidAsync("alert", "🗑️ Actividad eliminada");
+                await LoadActivities();
+            }
+        }
+    }
+}

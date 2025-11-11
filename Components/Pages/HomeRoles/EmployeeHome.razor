@@ -1,0 +1,22 @@
+﻿@page "/employee"
+@using CRUDManagmentWeb.Components.Pages.Auth
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<ProtectedPage>
+    <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+        <div class="text-center">
+            <h1 class="mb-4">👋 Bienvenida a la App</h1>
+            <p class="mb-4">Gestiona usuarios fácilmente desde aquí.</p>
+            <button class="btn btn-primary btn-lg" @onclick="GoActivities">Actividades</button>
+        </div>
+    </div>
+</ProtectedPage>
+
+@code {
+    private void GoActivities()
+    {
+        NavManager.NavigateTo("/company/activities");
+    }
+    
+}

@@ -1,0 +1,230 @@
+﻿@page "/admin/companies"
+@using CRUDManagmentWeb.Models.Company
+@using CRUDManagmentWeb.Models.User
+@inject CRUDManagmentWeb.Services.CompanyService CompanyService
+@inject CRUDManagmentWeb.Services.UserService UserService
+@inject IJSRuntime JS
+@using CRUDManagmentWeb.Components.Pages.Auth
+@rendermode InteractiveServer
+
+<ProtectedPage>
+    <h3 class="mb-4">🏢 Gestión de Compañías</h3>
+
+    <!-- FORMULARIO -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">@((isEditMode ? "Editar Compañía" : "Agregar Nueva Compañía"))</h5>
+
+            <EditForm Model="@companyForm" OnValidSubmit="@HandleSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre</label>
+                        <InputText class="form-control" @bind-Value="companyForm.Name" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Descripción</label>
+                        <InputText class="form-control" @bind-Value="companyForm.Description" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Dueño (Usuarios tipo Company)</label>
+                        <InputSelect class="form-select" @bind-Value="companyForm.OwnerUserId">
+                            <option value="0">-- Seleccione un usuario --</option>
+                            @foreach (var user in companyUsers)
+                            {
+                                <option value="@user.Id">@($"{user.Username} ({user.Email})")</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Activa</label><br />
+                        <InputCheckbox @bind-Value="companyForm.IsActive" />
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button class="btn btn-primary me-2" type="submit">
+                        @(isEditMode ? "Actualizar" : "Crear")
+                    </button>
+                    @if (isEditMode)
+                    {
+                        <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
+                    }
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">📋 Listado de Compañías</h5>
+
+            @if (companies == null)
+            {
+                <p>Cargando...</p>
+            }
+            else if (!companies.Any())
+            {
+                <p>No hay compañías registradas.</p>
+            }
+            else
+            {
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Dueño</th>
+                            <th>Rating</th>
+                            <th>Activa</th>
+                            <th>Creada</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in companies)
+                        {
+                            <tr>
+                                <td>@c.Name</td>
+                                <td>@c.Description</td>
+                                <td>
+                                    @companyUsers.FirstOrDefault(u => u.Id == c.OwnerUserId)?.Username ?? $"ID {c.OwnerUserId}"
+                                </td>
+                                <td>@($"{c.AvgRating:F1} ⭐ ({c.RatingCount})")</td>
+                                <td>@(c.IsActive ? "✅" : "❌")</td>
+                                <td>@c.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-warning me-2" @onclick="@(() => EditCompany(c))">✏️</button>
+                                    <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteCompany(c.Id))">🗑️</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</ProtectedPage>
+
+@code {
+    private List<CompanyDto>? companies;
+    private List<UserDto> companyUsers = new(); // Solo usuarios tipo Company
+    private CompanyFormModel companyForm = new();
+    private bool isEditMode = false;
+    private int editCompanyId;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadCompanyUsers();
+            await LoadCompanies();
+        }
+    }
+
+    private async Task LoadCompanies()
+    {
+        try
+        {
+            companies = await CompanyService.GetAllAsync() ?? new List<CompanyDto>();
+            Console.WriteLine($"✅ Compañías cargadas: {companies.Count}");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error al cargar compañías: {ex.Message}");
+        }
+    }
+
+    private async Task LoadCompanyUsers()
+    {
+        try
+        {
+            var allUsers = await UserService.GetAllAsync();
+            companyUsers = allUsers?.Where(u => u.Role.Equals("Company", StringComparison.OrdinalIgnoreCase)).ToList() ?? new();
+            Console.WriteLine($"✅ Usuarios tipo Company cargados: {companyUsers.Count}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error al cargar usuarios tipo Company: {ex.Message}");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        bool success;
+
+        if (isEditMode)
+        {
+            var updateRequest = new UpdateCompanyRequest(
+                companyForm.Name,
+                companyForm.Description,
+                companyForm.IsActive
+            );
+
+            success = await CompanyService.UpdateAsync(editCompanyId, updateRequest);
+        }
+        else
+        {
+            var createRequest = new CreateCompanyRequest(
+                companyForm.Name,
+                companyForm.Description,
+                companyForm.OwnerUserId
+            );
+
+            success = await CompanyService.CreateAsync(createRequest);
+        }
+
+        if (success)
+        {
+            await JS.InvokeVoidAsync("alert", "✅ Compañía guardada correctamente");
+            await LoadCompanies();
+            CancelEdit();
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "❌ Error al guardar la compañía");
+        }
+    }
+
+    private void EditCompany(CompanyDto company)
+    {
+        isEditMode = true;
+        editCompanyId = company.Id;
+
+        companyForm = new CompanyFormModel
+        {
+            Name = company.Name,
+            Description = company.Description ?? "",
+            OwnerUserId = company.OwnerUserId,
+            IsActive = company.IsActive
+        };
+    }
+
+    private void CancelEdit()
+    {
+        isEditMode = false;
+        editCompanyId = 0;
+        companyForm = new();
+    }
+
+    private async Task DeleteCompany(int id)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", "¿Eliminar esta compañía?");
+        if (confirmed)
+        {
+            var success = await CompanyService.DeleteAsync(id);
+            if (success)
+            {
+                await JS.InvokeVoidAsync("alert", "🗑️ Compañía eliminada");
+                await LoadCompanies();
+            }
+        }
+    }
+}

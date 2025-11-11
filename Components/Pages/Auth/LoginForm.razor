@@ -1,0 +1,87 @@
+﻿@page "/login"
+@rendermode InteractiveServer
+@using CRUDManagmentWeb.Models.Auth
+
+@inject CRUDManagmentWeb.Services.AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<h3>Iniciar Sesión</h3>
+
+<div class="login-form">
+    <EditForm Model="@loginInput" OnValidSubmit="@HandleLogin">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label>Usuario</label>
+            <InputText @bind-Value="loginInput.Username" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Contraseña</label>
+            <InputText @bind-Value="loginInput.Password" type="password" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Ingresar</button>
+    </EditForm>
+
+    <p>¿No tienes una cuenta? <a href="/register">Regístrate aquí</a></p>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger mt-2">@ErrorMessage</div>
+    }
+</div>
+
+@code {
+    private LoginInputModel loginInput = new();
+    private string? ErrorMessage;
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            var loginRequest = new LoginRequest
+            {
+                UsernameOrEmail = loginInput.Username,
+                Password = loginInput.Password
+            };
+
+            var authResponse = await AuthService.LoginAsync(loginRequest);
+
+            if (authResponse is not null)
+            {
+                // Redirigir según rol
+                switch (authResponse.Role)
+                {
+                    case "Admin":
+                        NavigationManager.NavigateTo("/admin", true);
+                        break;
+                    case "Company":
+                        NavigationManager.NavigateTo("/company", true);
+                        break;
+                    case "Employee":
+                        NavigationManager.NavigateTo("/employee", true);
+                        break;
+                    default:
+                        NavigationManager.NavigateTo("/homeuser", true);
+                        break;
+                }
+            }
+            else
+            {
+                ErrorMessage = "Usuario o contraseña incorrectos.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Ocurrió un error: {ex.Message}";
+        }
+    }
+
+    public class LoginInputModel
+    {
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
+}

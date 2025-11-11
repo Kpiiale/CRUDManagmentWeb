@@ -1,0 +1,263 @@
+﻿@page "/company/employees"
+@using CRUDManagmentWeb.Models.Employee
+@inject CRUDManagmentWeb.Services.EmployeeService EmployeeService
+@inject CRUDManagmentWeb.Services.CompanyService CompanyService
+@inject IJSRuntime JS
+@using CRUDManagmentWeb.Components.Pages.Auth
+@rendermode InteractiveServer
+
+<ProtectedPage>
+    <h3 class="mb-4">👥 Gestión de Empleados</h3>
+
+    <!-- FORMULARIO -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">@((isEditMode ? "Editar Empleado" : "Agregar Nuevo Empleado"))</h5>
+
+            <EditForm Model="@employeeForm" OnValidSubmit="@HandleSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Correo</label>
+                        <InputText class="form-control" @bind-Value="employeeForm.Email" />
+                        <ValidationMessage For="@(() => employeeForm.Email)" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Rol</label>
+                        <InputText class="form-control" @bind-Value="employeeForm.RoleInCompany" />
+                        <ValidationMessage For="@(() => employeeForm.RoleInCompany)" />
+                    </div>
+
+                    @if (!isEditMode)
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label">Usuario</label>
+                            <InputText class="form-control" @bind-Value="employeeForm.Username" />
+                            <ValidationMessage For="@(() => employeeForm.Username)" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Contraseña</label>
+                            <InputText class="form-control" type="password" @bind-Value="employeeForm.Password" />
+                            <ValidationMessage For="@(() => employeeForm.Password)" />
+                        </div>
+                    }
+                    @if (isEditMode)
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label">Cambiar contraseña</label><br />
+                            <InputCheckbox @bind-Value="changePassword" />
+                        </div>
+
+                        @if (changePassword)
+                        {
+                            <div class="col-md-6">
+                                <label class="form-label">Nueva contraseña</label>
+                                <InputText class="form-control" type="password" @bind-Value="employeeForm.Password" />
+                                <ValidationMessage For="@(() => employeeForm.Password)" />
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="mt-3">
+                    <button class="btn btn-primary me-2" type="submit">
+                        @(isEditMode ? "Actualizar" : "Crear")
+                    </button>
+                    @if (isEditMode)
+                    {
+                        <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
+                    }
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">📋 Empleados Registrados</h5>
+
+            @if (employees == null)
+            {
+                <p>Cargando...</p>
+            }
+            else if (!employees.Any())
+            {
+                <p>No hay empleados registrados.</p>
+            }
+            else
+            {
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th>Activo</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in employees)
+                        {
+                            <tr>
+                                <td>@e.Username</td>
+                                <td>@e.Email</td>
+                                <td>@e.RoleInCompany</td>
+                                <td>@(e.IsActive ? "✅" : "❌")</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-warning me-2" @onclick="@(() => EditEmployee(e))">✏️</button>
+                                    <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteEmployee(e.Id))">🗑️</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</ProtectedPage>
+
+@code {
+    private List<EmployeeDto> employees = new();
+    private EmployeeFormModel employeeForm = new();
+    private int companyId;
+    private bool isEditMode = false;
+    private int editEmployeeId;
+    private bool changePassword = false;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await LoadCompanyId();
+                if (companyId == 0)
+                {
+                    await JS.InvokeVoidAsync("alert", "⚠️ No se encontró empresa asociada al usuario");
+                    return;
+                }
+
+                await LoadEmployees();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error en carga inicial: {ex.Message}");
+                await JS.InvokeVoidAsync("alert", $"Error al cargar la página: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task LoadCompanyId()
+    {
+        var userId = await GetCurrentUserId();
+        var companies = await CompanyService.GetAllAsync();
+        var myCompany = companies.FirstOrDefault(c => c.OwnerUserId == userId);
+        companyId = myCompany?.Id ?? 0;
+    }
+
+    private async Task<int> GetCurrentUserId()
+    {
+        var user = await JS.InvokeAsync<string>("localStorage.getItem", "userId");
+        return int.TryParse(user, out var id) ? id : 0;
+    }
+
+    private async Task LoadEmployees()
+    {
+        employees = await EmployeeService.GetAllAsync(companyId);
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            if (isEditMode)
+            {
+                var updateRequest = new UpdateEmployeeRequest(
+                    employeeForm.Email,
+                    employeeForm.RoleInCompany,
+                    employeeForm.IsActive,
+                    string.IsNullOrWhiteSpace(employeeForm.Password) ? null : employeeForm.Password
+                );
+                var success = await EmployeeService.UpdateAsync(editEmployeeId, updateRequest);
+
+                if (success)
+                {
+                    await JS.InvokeVoidAsync("alert", "✅ Empleado actualizado");
+                    CancelEdit();
+                    await LoadEmployees();
+                }
+                else
+                {
+                    await JS.InvokeVoidAsync("alert", "❌ Error al actualizar el empleado");
+                }
+            }
+            else
+            {
+                var createRequest = new CreateEmployeeRequest(
+                    employeeForm.Username,
+                    employeeForm.Email,
+                    employeeForm.Password,
+                    employeeForm.RoleInCompany
+                );
+
+                var success = await EmployeeService.CreateAsync(companyId, createRequest);
+
+                if (success)
+                {
+                    await JS.InvokeVoidAsync("alert", "✅ Empleado creado correctamente");
+                    employeeForm = new();
+                    await LoadEmployees();
+                }
+                else
+                {
+                    await JS.InvokeVoidAsync("alert", "❌ Error al crear el empleado");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error en HandleSubmit: {ex.Message}");
+            await JS.InvokeVoidAsync("alert", $"Error inesperado: {ex.Message}");
+        }
+    }
+
+    private void EditEmployee(EmployeeDto employee)
+    {
+        isEditMode = true;
+        editEmployeeId = employee.Id;
+
+        employeeForm = new EmployeeFormModel
+        {
+            Username = employee.Username,
+            Email = employee.Email,
+            Password = "",
+            RoleInCompany = employee.RoleInCompany,
+            IsActive = employee.IsActive
+        };
+    }
+
+    private void CancelEdit()
+    {
+        isEditMode = false;
+        editEmployeeId = 0;
+        employeeForm = new();
+    }
+
+    private async Task DeleteEmployee(int id)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", "¿Eliminar este empleado?");
+        if (confirmed)
+        {
+            var success = await EmployeeService.DeleteAsync(id);
+            if (success)
+            {
+                await JS.InvokeVoidAsync("alert", "🗑️ Empleado eliminado");
+                await LoadEmployees();
+            }
+        }
+    }
+}

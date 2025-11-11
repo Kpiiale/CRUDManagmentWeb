@@ -1,0 +1,87 @@
+﻿@page "/register"
+@using CRUDManagmentWeb.Models.Auth
+@rendermode InteractiveServer
+@inject CRUDManagmentWeb.Services.AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<h3>Registro de Usuario</h3>
+
+<div class="register-form">
+    <EditForm Model="@registerInput" OnValidSubmit="@HandleRegister">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label>Nombre de usuario</label>
+            <InputText @bind-Value="registerInput.Username" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <InputText @bind-Value="registerInput.Email" type="email" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Contraseña</label>
+            <InputText @bind-Value="registerInput.Password" type="password" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Registrar</button>
+    </EditForm>
+
+    <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión</a></p>
+
+    @if (!string.IsNullOrEmpty(SuccessMessage))
+    {
+        <div class="alert alert-success mt-2">@SuccessMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger mt-2">@ErrorMessage</div>
+    }
+</div>
+
+@code {
+    private RegisterInputModel registerInput = new();
+    private string? SuccessMessage;
+    private string? ErrorMessage;
+
+    private async Task HandleRegister()
+    {
+        try
+        {
+            var registerRequest = new RegisterRequest(
+                registerInput.Username,
+                registerInput.Email,
+                registerInput.Password,
+                "system"
+            );
+
+
+
+            bool registered = await AuthService.RegisterAsync(registerRequest);
+
+            if (registered)
+            {
+                SuccessMessage = "Usuario registrado con éxito. Ahora puedes iniciar sesión.";
+                NavigationManager.NavigateTo("/login", true);
+            }
+            else
+            {
+                ErrorMessage = "Error al registrar usuario. Verifica los datos ingresados.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Ocurrió un error: {ex.Message}";
+        }
+    }
+
+    public class RegisterInputModel
+    {
+        public string Username { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
+}

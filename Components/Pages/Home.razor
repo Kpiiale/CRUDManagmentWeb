@@ -1,0 +1,23 @@
+﻿@page "/"
+@inject NavigationManager NavManager
+@rendermode InteractiveServer 
+
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div class="text-center">
+        <h1 class="mb-4">👋 Bienvenida a la App</h1>
+        <p class="mb-4">Gestiona usuarios fácilmente desde aquí.</p>
+        <button class="btn btn-primary btn-lg" @onclick="IrALogin">Ingresar</button>
+        <button class="btn btn-primary btn-lg" @onclick="IrRegistrar">Registrarte</button>
+    </div>
+</div>
+
+@code {
+    private void IrALogin()
+    {
+        NavManager.NavigateTo("/login");
+    }
+    private void IrRegistrar()
+    {
+        NavManager.NavigateTo("/register");
+    }
+}

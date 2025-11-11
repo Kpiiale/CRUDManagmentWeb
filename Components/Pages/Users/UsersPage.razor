@@ -1,0 +1,216 @@
+﻿@page "/admin/users"
+@using CRUDManagmentWeb.Components.Pages.Auth
+@using CRUDManagmentWeb.Models.User
+@inject CRUDManagmentWeb.Services.UserService UserService
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+<ProtectedPage>
+    <h3 class="mb-4">👤 Gestión de Usuarios</h3>
+
+    <!-- FORMULARIO -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">@((isEditMode ? "Editar Usuario" : "Agregar Usuario"))</h5>
+
+            <EditForm Model="@userForm" OnValidSubmit="@HandleSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre</label>
+                        <InputText class="form-control" @bind-Value="userForm.Username" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Correo</label>
+                        <InputText class="form-control" @bind-Value="userForm.Email" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Rol</label>
+                        <InputText class="form-control" @bind-Value="userForm.Role" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Contraseña</label>
+                        <InputText type="password" class="form-control" @bind-Value="userForm.Password" />
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button class="btn btn-primary me-2" type="submit">
+                        @(isEditMode ? "Actualizar" : "Crear")
+                    </button>
+                    @if (isEditMode)
+                    {
+                        <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
+                    }
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Usuarios registrados</h5>
+
+            @if (users == null)
+            {
+                <p>Cargando...</p>
+            }
+            else if (!users.Any())
+            {
+                <p>No hay usuarios registrados.</p>
+            }
+            else
+            {
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Activo</th>
+                            <th style="width:150px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in users)
+                        {
+                            <tr>
+                                <td>@u.Username</td>
+                                <td>@u.Email</td>
+                                <td>@u.Role</td>
+                                <td>
+                                    @if (u.IsActive)
+                                    {
+                                        <span class="badge bg-success">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactivo</span>
+                                    }
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning me-2" @onclick="@(() => EditUser(u))">
+                                        ✏️ Editar
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteUser(u.Id))">
+                                        🗑️ Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</ProtectedPage>
+
+@code {
+    private List<UserDto>? users;
+    private UserFormModel userForm = new();
+    private bool isEditMode = false;
+    private int editUserId;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        try
+        {
+            users = await UserService.GetAllAsync() ?? new List<UserDto>();
+            Console.WriteLine($"✅ Usuarios cargados: {users.Count}");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error al cargar usuarios: {ex.Message}");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        bool success;
+
+        if (isEditMode)
+        {
+            var updateRequest = new UpdateUserRequest(
+                userForm.Email,
+                userForm.Role,
+                string.IsNullOrWhiteSpace(userForm.Password) ? null : userForm.Password,
+                userForm.IsActive
+            );
+
+            success = await UserService.UpdateAsync(editUserId, updateRequest);
+        }
+        else
+        {
+            var createRequest = new CreateUserRequest(
+                userForm.Username,
+                userForm.Email,
+                userForm.Password,
+                userForm.Role,
+                userForm.IsActive
+            );
+
+            success = await UserService.CreateAsync(createRequest);
+        }
+
+        if (success)
+        {
+            await JS.InvokeVoidAsync("alert", "✅ Usuario guardado correctamente");
+            await LoadUsers();
+            CancelEdit();
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "❌ Error al guardar el usuario");
+        }
+    }
+
+    private void EditUser(UserDto user)
+    {
+        isEditMode = true;
+        editUserId = user.Id;
+
+        userForm = new UserFormModel
+        {
+            Username = user.Username,
+            Email = user.Email,
+            Role = user.Role,
+            Password = "",
+            IsActive = user.IsActive
+        };
+    }
+
+    private void CancelEdit()
+    {
+        isEditMode = false;
+        editUserId = 0;
+        userForm = new();
+    }
+
+    private async Task DeleteUser(int id)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", "¿Eliminar este usuario?");
+        if (confirmed)
+        {
+            var success = await UserService.DeleteAsync(id);
+            if (success)
+            {
+                await JS.InvokeVoidAsync("alert", "🗑️ Usuario eliminado correctamente");
+                await LoadUsers();
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "❌ No se pudo eliminar el usuario");
+            }
+        }
+    }
+}
