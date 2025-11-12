@@ -19,8 +19,6 @@
         decimal? AvgRating,
         int? RatingCount,
         DateTime CreatedAt,
-        DateTime? UpdatedAt,
-        string? CreatedBy,
-        string? UpdatedBy
+        DateTime? UpdatedAt
     );
 }
