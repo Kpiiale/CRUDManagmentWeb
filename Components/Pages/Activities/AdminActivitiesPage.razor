@@ -1,11 +1,13 @@
 ﻿@page "/admin/activities"
+@using CRUDManagmentWeb.Components.Shared
 @using CRUDManagmentWeb.Models.Activity
 @using CRUDManagmentWeb.Models.Company
 @using CRUDManagmentWeb.Services
+@using Microsoft.AspNetCore.Authorization
 @inject ActivityService ActivityService
 @inject CompanyService CompanyService
-
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
 <div class="user-container">
     <div class="user-card">
@@ -80,6 +82,7 @@
         }
     </div>
 </div>
+
 
 @code {
     private List<CompanyDto>? companies;

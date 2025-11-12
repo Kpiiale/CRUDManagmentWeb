@@ -1,9 +1,11 @@
 ﻿@page "/company"
 @using CRUDManagmentWeb.Components.Pages.Auth
+@using CRUDManagmentWeb.Components.Shared
+@using Microsoft.AspNetCore.Authorization
 @inject NavigationManager NavManager
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Company")]
 
-<ProtectedPage>
     <div class="main-page">
         <div class="main-card">
             <h1 class="main-title">Bienvenido a tu empresa</h1>
@@ -28,8 +30,6 @@
             </div>
         </div>
     </div>
-</ProtectedPage>
-
 @code {
     private void GoEmployees()
     {

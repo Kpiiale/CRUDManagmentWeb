@@ -1,18 +1,18 @@
 ﻿@page "/admin/users"
 @using CRUDManagmentWeb.Components.Pages.Auth
+@using CRUDManagmentWeb.Components.Shared
 @using CRUDManagmentWeb.Models.User
+@using Microsoft.AspNetCore.Authorization
 @inject CRUDManagmentWeb.Services.UserService UserService
 @inject IJSRuntime JS
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")] 
 
-<ProtectedPage>
-    <div class="user-container">
+<div class="user-container">
         <div class="user-card">
             <div class="user-header">
                 <h2>👤 Gestión de Usuarios</h2>
             </div>
-
-            <!-- FORMULARIO -->
             <div class="user-form">
                 <h3>@(isEditMode ? "Editar Usuario" : "Agregar Usuario")</h3>
 
@@ -79,8 +79,6 @@
                     </div>
                 </EditForm>
             </div>
-
-            <!-- TABLA -->
             <div class="user-table">
                 <h3>Usuarios registrados</h3>
 
@@ -128,7 +126,7 @@
             </div>
         </div>
     </div>
-</ProtectedPage>
+
 
 @code {
     private List<UserDto>? users;
@@ -147,12 +145,12 @@
         try
         {
             users = await UserService.GetAllAsync() ?? new List<UserDto>();
-            Console.WriteLine($"✅ Usuarios cargados: {users.Count}");
+            Console.WriteLine($"Usuarios cargados: {users.Count}");
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Error al cargar usuarios: {ex.Message}");
+            Console.WriteLine($"Error al cargar usuarios: {ex.Message}");
         }
     }
 
@@ -186,13 +184,13 @@
 
         if (success)
         {
-            await JS.InvokeVoidAsync("alert", "✅ Usuario guardado correctamente");
+            await JS.InvokeVoidAsync("alert", "Usuario guardado correctamente");
             await LoadUsers();
             CancelEdit();
         }
         else
         {
-            await JS.InvokeVoidAsync("alert", "❌ Error al guardar el usuario");
+            await JS.InvokeVoidAsync("alert", "Error al guardar el usuario");
         }
     }
 
@@ -226,12 +224,12 @@
             var success = await UserService.DeleteAsync(id);
             if (success)
             {
-                await JS.InvokeVoidAsync("alert", "🗑️ Usuario eliminado correctamente");
+                await JS.InvokeVoidAsync("alert", "Usuario eliminado correctamente");
                 await LoadUsers();
             }
             else
             {
-                await JS.InvokeVoidAsync("alert", "❌ No se pudo eliminar el usuario");
+                await JS.InvokeVoidAsync("alert", "No se pudo eliminar el usuario");
             }
         }
     }

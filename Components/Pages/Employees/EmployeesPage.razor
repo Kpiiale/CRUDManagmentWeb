@@ -1,12 +1,14 @@
 ﻿@page "/company/employees"
+@using CRUDManagmentWeb.Components.Shared
 @using CRUDManagmentWeb.Models.Employee
 @inject CRUDManagmentWeb.Services.EmployeeService EmployeeService
 @inject CRUDManagmentWeb.Services.CompanyService CompanyService
 @inject IJSRuntime JS
 @using CRUDManagmentWeb.Components.Pages.Auth
+@using Microsoft.AspNetCore.Authorization
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Company")]
 
-<ProtectedPage>
     <div class="user-container">
         <div class="user-card">
             <div class="user-header">
@@ -144,7 +146,6 @@
             </div>
         </div>
     </div>
-</ProtectedPage>
 
 @code {
     private List<EmployeeDto> employees = new();
@@ -162,7 +163,7 @@
                 await LoadCompanyId();
                 if (companyId == 0)
                 {
-                    await JS.InvokeVoidAsync("alert", "⚠️ No se encontró empresa asociada al usuario");
+                    await JS.InvokeVoidAsync("alert", "No se encontró empresa asociada al usuario");
                     return;
                 }
 
@@ -170,7 +171,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error en carga inicial: {ex.Message}");
+                Console.WriteLine($"Error en carga inicial: {ex.Message}");
                 await JS.InvokeVoidAsync("alert", $"Error al cargar la página: {ex.Message}");
             }
         }
@@ -212,13 +213,13 @@
 
                 if (success)
                 {
-                    await JS.InvokeVoidAsync("alert", "✅ Empleado actualizado");
+                    await JS.InvokeVoidAsync("alert", "Empleado actualizado");
                     CancelEdit();
                     await LoadEmployees();
                 }
                 else
                 {
-                    await JS.InvokeVoidAsync("alert", "❌ Error al actualizar el empleado");
+                    await JS.InvokeVoidAsync("alert", "Error al actualizar el empleado");
                 }
             }
             else
@@ -234,19 +235,19 @@
 
                 if (success)
                 {
-                    await JS.InvokeVoidAsync("alert", "✅ Empleado creado correctamente");
+                    await JS.InvokeVoidAsync("alert", "Empleado creado correctamente");
                     employeeForm = new();
                     await LoadEmployees();
                 }
                 else
                 {
-                    await JS.InvokeVoidAsync("alert", "❌ Error al crear el empleado");
+                    await JS.InvokeVoidAsync("alert", "Error al crear el empleado");
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Error en HandleSubmit: {ex.Message}");
+            Console.WriteLine($"Error en HandleSubmit: {ex.Message}");
             await JS.InvokeVoidAsync("alert", $"Error inesperado: {ex.Message}");
         }
     }
@@ -281,7 +282,7 @@
             var success = await EmployeeService.DeleteAsync(id);
             if (success)
             {
-                await JS.InvokeVoidAsync("alert", "🗑️ Empleado eliminado");
+                await JS.InvokeVoidAsync("alert", "Empleado eliminado");
                 await LoadEmployees();
             }
         }

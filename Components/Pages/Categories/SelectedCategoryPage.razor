@@ -1,13 +1,14 @@
 ﻿@page "/activities/select-category/{ActivityId:int}"
 @using CRUDManagmentWeb.Components.Pages.Auth
+@using CRUDManagmentWeb.Components.Shared
 @using CRUDManagmentWeb.Models.Category
+@using Microsoft.AspNetCore.Authorization
 @inject CRUDManagmentWeb.Services.CategoryService CategoryService
 @inject CRUDManagmentWeb.Services.ActivityCategoryService ActivityCategoryService
 @inject IJSRuntime JS
 @inject NavigationManager Nav
 @rendermode InteractiveServer
-
-
+@attribute [Authorize(Roles = "Company, Employee")]
 <div class="user-container">
     <div class="user-card">
         <div class="user-header">

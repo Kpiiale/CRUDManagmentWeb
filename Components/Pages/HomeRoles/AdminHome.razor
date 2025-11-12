@@ -1,10 +1,12 @@
 ﻿@page "/admin"
 @using CRUDManagmentWeb.Components.Pages.Auth
+@using CRUDManagmentWeb.Components.Shared
+@using Microsoft.AspNetCore.Authorization
 @inject NavigationManager NavManager
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
-<ProtectedPage>
-    <div class="main-page">
+<div class="main-page">
         <div class="main-card">
             <h1 class="main-title">Bienvenido a MANAGMENT</h1>
             <p class="main-subtitle">Gestiona la app fácilmente desde aquí.</p>
@@ -44,7 +46,6 @@
             </div>
         </div>
     </div>
-</ProtectedPage>
 
 @code {
     private void GoUsers()

@@ -1,12 +1,13 @@
 ﻿@page "/admin/categories"
+@using CRUDManagmentWeb.Components.Shared
 @using CRUDManagmentWeb.Models.Category
+@using Microsoft.AspNetCore.Authorization
 @inject CRUDManagmentWeb.Services.CategoryService CategoryService
 @inject IJSRuntime JS
-@using CRUDManagmentWeb.Components.Pages.Auth
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
-<ProtectedPage >
-    <div class="user-container">
+<div class="user-container">
         <div class="user-card">
             <div class="user-header">
                 <h2>Gestión de Categorías</h2>
@@ -87,7 +88,6 @@
             </div>
         </div>
     </div>
-</ProtectedPage>
 
 @code {
     private List<CategoryDto>? categories;
@@ -125,13 +125,13 @@
 
         if (success)
         {
-            await JS.InvokeVoidAsync("alert", "✅ Categoría guardada correctamente");
+            await JS.InvokeVoidAsync("alert", "Categoría guardada correctamente");
             await LoadCategories();
             CancelEdit();
         }
         else
         {
-            await JS.InvokeVoidAsync("alert", "❌ Error al guardar la categoría");
+            await JS.InvokeVoidAsync("alert", "Error al guardar la categoría");
         }
         Console.WriteLine($"Modo edición: {isEditMode}, ID: {editId}, Nombre: {categoryForm.Name}");
     }
@@ -158,7 +158,7 @@
             var success = await CategoryService.DeleteAsync(id);
             if (success)
             {
-                await JS.InvokeVoidAsync("alert", "🗑️ Categoría eliminada");
+                await JS.InvokeVoidAsync("alert", "Categoría eliminada");
                 await LoadCategories();
             }
         }

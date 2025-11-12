@@ -1,14 +1,15 @@
 ﻿@page "/admin/companies"
+@using CRUDManagmentWeb.Components.Shared
 @using CRUDManagmentWeb.Models.Company
 @using CRUDManagmentWeb.Models.User
 @inject CRUDManagmentWeb.Services.CompanyService CompanyService
 @inject CRUDManagmentWeb.Services.UserService UserService
 @inject IJSRuntime JS
 @using CRUDManagmentWeb.Components.Pages.Auth
+@using Microsoft.AspNetCore.Authorization
 @rendermode InteractiveServer
-
-<ProtectedPage>
-    <div class="user-container">
+@attribute [Authorize(Roles = "Admin")]
+<div class="user-container">
         <div class="user-card">
             <div class="user-header">
                 <h2>Gestión de Empresas</h2>
@@ -125,11 +126,10 @@
             </div>
         </div>
     </div>
-</ProtectedPage>
 
 @code {
     private List<CompanyDto>? companies;
-    private List<UserDto> companyUsers = new(); // Solo usuarios tipo Company
+    private List<UserDto> companyUsers = new(); 
     private CompanyFormModel companyForm = new();
     private bool isEditMode = false;
     private int editCompanyId;
@@ -148,12 +148,12 @@
         try
         {
             companies = await CompanyService.GetAllAsync() ?? new List<CompanyDto>();
-            Console.WriteLine($"✅ Compañías cargadas: {companies.Count}");
+            Console.WriteLine($"Compañías cargadas: {companies.Count}");
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Error al cargar compañías: {ex.Message}");
+            Console.WriteLine($"Error al cargar compañías: {ex.Message}");
         }
     }
 
@@ -163,11 +163,11 @@
         {
             var allUsers = await UserService.GetAllAsync();
             companyUsers = allUsers?.Where(u => u.Role.Equals("Company", StringComparison.OrdinalIgnoreCase)).ToList() ?? new();
-            Console.WriteLine($"✅ Usuarios tipo Company cargados: {companyUsers.Count}");
+            Console.WriteLine($"Usuarios tipo Company cargados: {companyUsers.Count}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Error al cargar usuarios tipo Company: {ex.Message}");
+            Console.WriteLine($"Error al cargar usuarios tipo Company: {ex.Message}");
         }
     }
 
@@ -198,13 +198,13 @@
 
         if (success)
         {
-            await JS.InvokeVoidAsync("alert", "✅ Compañía guardada correctamente");
+            await JS.InvokeVoidAsync("alert", "Compañía guardada correctamente");
             await LoadCompanies();
             CancelEdit();
         }
         else
         {
-            await JS.InvokeVoidAsync("alert", "❌ Error al guardar la compañía");
+            await JS.InvokeVoidAsync("alert", "Error al guardar la compañía");
         }
     }
 
@@ -237,7 +237,7 @@
             var success = await CompanyService.DeleteAsync(id);
             if (success)
             {
-                await JS.InvokeVoidAsync("alert", "🗑️ Compañía eliminada");
+                await JS.InvokeVoidAsync("alert", "Compañía eliminada");
                 await LoadCompanies();
             }
         }

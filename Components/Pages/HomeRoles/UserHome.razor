@@ -1,4 +1,11 @@
-﻿<h3>UserHome</h3>
+﻿@page "/homeuser"
+@using CRUDManagmentWeb.Components.Shared
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Roles = "User")]
+<h3>UserHome</h3> 
+
+
 
 @code {
 

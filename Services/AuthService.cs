@@ -1,8 +1,10 @@
 ﻿using CRUDManagmentWeb.Models.Auth;
+using CRUDManagmentWeb.Services.Auth;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
 using Microsoft.JSInterop;
 using System.Net.Http;
 using System.Text.Json;
-using Microsoft.JSInterop;
 
 namespace CRUDManagmentWeb.Services
 {
@@ -10,28 +12,25 @@ namespace CRUDManagmentWeb.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IJSRuntime _jsRuntime;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
-        public AuthService(HttpClient httpClient, IJSRuntime jsRuntime)
+        public AuthService(HttpClient httpClient, IJSRuntime jsRuntime, AuthenticationStateProvider authenticationStateProvider)
         {
             _httpClient = httpClient;
             _jsRuntime = jsRuntime;
+            _authenticationStateProvider = authenticationStateProvider; 
         }
-
-        // URL base de la API
         private const string BaseUrl = "https://localhost:7162/api/Auth"; // cambia si el puerto es diferente
-
-        // === LOGIN ===
         public async Task<AuthResponse?> LoginAsync(LoginRequest request)
         {
             var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/login", request);
             var content = await response.Content.ReadAsStringAsync();
 
-            Console.WriteLine($"🔍 LOGIN -> {response.StatusCode}: {content}");
+            Console.WriteLine($"LOGIN -> {response.StatusCode}: {content}");
 
             if (!response.IsSuccessStatusCode)
             {
-                // Mostrar mensaje de error real (opcional)
                 await _jsRuntime.InvokeVoidAsync("alert", $"Error del servidor: {response.StatusCode}\n{content}");
                 return null;
             }
@@ -40,13 +39,11 @@ namespace CRUDManagmentWeb.Services
             if (auth is not null)
             {
                 await SaveAuthData(auth);
+                ((CustomAuthStateProvider)_authenticationStateProvider).NotifyUserAuthentication();
             }
 
             return auth;
         }
-
-
-        // === REGISTRO ===
         public async Task<bool> RegisterAsync(RegisterRequest request)
         {
             var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/register", request);
@@ -56,15 +53,12 @@ namespace CRUDManagmentWeb.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                // Puedes mostrar el mensaje devuelto por el backend
                 await _jsRuntime.InvokeVoidAsync("alert", $"Error del servidor: {content}");
                 return false;
             }
 
             return true;
         }
-
-        // === GUARDAR TOKEN Y DATOS DEL USUARIO ===
         private async Task SaveAuthData(AuthResponse auth)
         {
             await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", auth.Token);
@@ -90,6 +84,7 @@ namespace CRUDManagmentWeb.Services
         public async Task LogoutAsync()
         {
             await _jsRuntime.InvokeVoidAsync("localStorage.clear");
+            ((CustomAuthStateProvider)_authenticationStateProvider).NotifyUserLogout();
         }
     }
 }

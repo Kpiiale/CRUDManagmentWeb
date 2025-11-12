@@ -1,0 +1,70 @@
+﻿@inject CRUDManagmentWeb.Services.AuthService AuthService
+@inject NavigationManager NavigationManager
+
+@if (!_isInitialized)
+{
+    <div class="text-center mt-5">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Verificando acceso...</p>
+    </div>
+}
+else if (!_isAuthorized)
+{
+    <div class="alert alert-danger text-center">
+        <h4>Acceso Denegado</h4>
+        <p>No tienes los permisos necesarios para ver esta página. Serás redirigido.</p>
+    </div>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Roles { get; set; }
+
+    private bool _isAuthorized = false;
+    private bool _isInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var user = await AuthService.GetCurrentUserAsync();
+
+            if (user is null)
+            {
+                NavigationManager.NavigateTo("/login", forceLoad: true); 
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(Roles))
+            {
+
+                var allowedRoles = Roles.Split(',').Select(r => r.Trim()).ToList();
+                if (allowedRoles.Contains(user.Role, StringComparer.OrdinalIgnoreCase))
+                {
+                    _isAuthorized = true; 
+                }
+            }
+            else
+            {
+                _isAuthorized = true;
+            }
+            if (!_isAuthorized)
+            {
+                await Task.Delay(2000);
+                NavigationManager.NavigateTo("/"); 
+            }
+
+            _isInitialized = true;
+            StateHasChanged();
+        }
+    }
+}
