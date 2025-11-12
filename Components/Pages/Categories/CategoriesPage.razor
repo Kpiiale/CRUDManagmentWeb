@@ -6,77 +6,85 @@
 @rendermode InteractiveServer
 
 <ProtectedPage >
-    <h3 class="mb-4">📚 Gestión de Categorías</h3>
+    <div class="user-container">
+        <div class="user-card">
+            <div class="user-header">
+                <h2>Gestión de Categorías</h2>
+            </div>
 
-    <!-- Formulario de creación / edición -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">@((isEditMode ? "Editar Categoría" : "Agregar Nueva Categoría"))</h5>
+            <div class="user-form">
+                <h3>@(isEditMode ? "Editar Categoría" : "Agregar Nueva Categoría")</h3>
 
-            <EditForm Model="@categoryForm" OnValidSubmit="@HandleSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+                <EditForm Model="@categoryForm" OnValidSubmit="@HandleSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Nombre</label>
-                        <InputText class="form-control" @bind-Value="categoryForm.Name" />
+                    <div class="user-grid">
+                        <div class="user-group">
+                            <label class="user-label">Nombre</label>
+                            <div class="user-input-wrapper">
+                                <InputText @bind-Value="categoryForm.Name" placeholder="Nombre de la categoría" />
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="mt-3">
-                    <button class="btn btn-primary me-2" type="submit">
-                        @(isEditMode ? "Actualizar" : "Crear")
-                    </button>
-                    @if (isEditMode)
-                    {
-                        <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
-                    }
-                </div>
-            </EditForm>
-        </div>
-    </div>
+                    <div class="user-actions">
+                        <button class="user-btn" type="submit">
+                            <span class="btn-text">@(isEditMode ? "Actualizar" : "Crear")</span>
+                            <span class="btn-loader">
+                                <span class="loader-bar"></span>
+                                <span class="loader-bar"></span>
+                                <span class="loader-bar"></span>
+                            </span>
+                        </button>
 
-    <!-- Tabla de categorías -->
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">📋 Lista de Categorías</h5>
-
-            @if (categories == null)
-            {
-                <p>Cargando...</p>
-            }
-            else if (!categories.Any())
-            {
-                <p>No hay categorías registradas.</p>
-            }
-            else
-            {
-                <table class="table table-striped align-middle">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Creada por</th>
-                            <th>Fecha de creación</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var c in categories)
+                        @if (isEditMode)
                         {
-                            <tr>
-                                <td>@c.Name</td>
-                                <td>@c.CreatedBy</td>
-                                <td>@c.CreatedAt.ToString("dd/MM/yyyy")</td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-warning me-2" @onclick="@(() => EditCategory(c))">✏️</button>
-                                    <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteCategory(c.Id))">🗑️</button>
-                                </td>
-                            </tr>
+                            <button type="button" class="user-btn cancel" @onclick="CancelEdit">Cancelar</button>
                         }
-                    </tbody>
-                </table>
-            }
+                    </div>
+                </EditForm>
+            </div>
+
+            <div class="user-table">
+                <h3>📋 Lista de Categorías</h3>
+
+                @if (categories == null)
+                {
+                    <p>Cargando...</p>
+                }
+                else if (!categories.Any())
+                {
+                    <p>No hay categorías registradas.</p>
+                }
+                else
+                {
+                    <table class="user-table-content">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Creada por</th>
+                                <th>Fecha de creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in categories)
+                            {
+                                <tr>
+                                    <td>@c.Name</td>
+                                    <td>@c.CreatedBy</td>
+                                    <td>@c.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <button class="user-btn small edit" @onclick="@(() => EditCategory(c))">✏️</button>
+                                        <button class="user-btn small delete" @onclick="@(() => DeleteCategory(c.Id))">🗑️</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
         </div>
     </div>
 </ProtectedPage>

@@ -9,77 +9,133 @@
 @rendermode InteractiveServer
 
 <ProtectedPage>
-    <h3 class="mb-4">🎯 Gestión de Actividades</h3>
-   <p class="text-muted">🔍 Mostrando actividades de tu compañía actual</p>
+    <div class="user-container">
+        <div class="user-card">
+            <div class="user-header">
+                <h2>Gestión de Actividades</h2>
+                <p class="text-muted">Mostrando actividades de tu compañía actual</p>
+            </div>
 
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">@((isEditMode ? "Editar Actividad" : "Agregar Nueva Actividad"))</h5>
+            <div class="user-form">
+                <h3>@(isEditMode ? "Editar Actividad" : "Agregar Nueva Actividad")</h3>
 
                 <EditForm Model="@activityForm" OnValidSubmit="@HandleSubmit">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
 
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Título</label>
-                            <InputText class="form-control" @bind-Value="activityForm.Title" />
+                    <div class="user-grid">
+                        <div class="user-group">
+                            <label class="user-label">Título</label>
+                            <div class="user-input-wrapper">
+                                <InputText @bind-Value="activityForm.Title" placeholder="Título de la actividad" />
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Descripción</label>
-                            <InputText class="form-control" @bind-Value="activityForm.Description" />
+
+                        <div class="user-group">
+                            <label class="user-label">Descripción</label>
+                            <div class="user-input-wrapper">
+                                <InputText @bind-Value="activityForm.Description" placeholder="Descripción breve" />
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Ubicación</label>
-                            <InputText class="form-control" @bind-Value="activityForm.LocationText" />
+
+                        <div class="user-group">
+                            <label class="user-label">Ubicación</label>
+                            <div class="user-input-wrapper">
+                                <InputText @bind-Value="activityForm.LocationText" placeholder="Ubicación" />
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Inicio</label>
-                            <InputDate class="form-control" @bind-Value="activityForm.StartAt" />
+
+                        <div class="user-group">
+                            <label class="user-label">Inicio</label>
+                            <div class="user-input-wrapper">
+                                <InputDate @bind-Value="activityForm.StartAt" />
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Fin</label>
-                            <InputDate class="form-control" @bind-Value="activityForm.EndAt" />
+
+                        <div class="user-group">
+                            <label class="user-label">Fin</label>
+                            <div class="user-input-wrapper">
+                                <InputDate @bind-Value="activityForm.EndAt" />
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Capacidad</label>
-                            <InputNumber class="form-control" @bind-Value="activityForm.Capacity" />
+
+                        <div class="user-group">
+                            <label class="user-label">Capacidad</label>
+                            <div class="user-input-wrapper">
+                                <InputNumber @bind-Value="activityForm.Capacity" />
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Precio</label>
-                            <InputNumber class="form-control" @bind-Value="activityForm.Price" />
+
+                        <div class="user-group">
+                            <label class="user-label">Precio</label>
+                            <div class="user-input-wrapper">
+                                <InputNumber @bind-Value="activityForm.Price" />
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Moneda</label>
-                            <InputText class="form-control" @bind-Value="activityForm.Currency" />
+
+                        <div class="user-group">
+                            <label class="user-label">Moneda</label>
+                            <div class="user-input-wrapper">
+                                <InputSelect @bind-Value="activityForm.Currency">
+                                    <option value="">Selecciona una moneda</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                    <option value="CHF">CHF</option>
+                                    <option value="JYP">JYP</option>
+                                    <option value="HKD">HKD</option>
+                                    <option value="CAD">CAD</option>
+                                    <option value="CNY">CNY</option>
+                                    <option value="AUD">AUD</option>
+                                    <option value="BRL">BRL</option>
+                                    <option value="RUB">RUB</option>
+                                    <option value="MXN">MXN</option>
+                                </InputSelect>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Estado</label>
-                            <InputText class="form-control" @bind-Value="activityForm.Status" />
+
+                        <div class="user-group">
+                            <label class="user-label">Estado</label>
+                            <div class="user-input-wrapper">
+                                <InputSelect @bind-Value="activityForm.Status">
+                                    <option value="">Selecciona estado</option>
+                                    <option value="Finished">Finished</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                    <option value="Published">Published</option>
+                                    <option value="Draft">Draft</option>
+                                </InputSelect>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Lista de espera</label><br />
-                            <InputCheckbox @bind-Value="activityForm.AllowWaitlist" />
+
+                        <div class="user-group">
+                            <label class="user-label">Lista de espera</label>
+                            <div class="checkbox-wrapper">
+                                <InputCheckbox @bind-Value="activityForm.AllowWaitlist" />
+                                <label class="checkbox-label">Permitir lista de espera</label>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-3">
-                        <button class="btn btn-primary me-2" type="submit">
-                            @(isEditMode ? "Actualizar" : "Crear")
+                    <div class="user-actions">
+                        <button class="user-btn" type="submit">
+                            <span class="btn-text">@(isEditMode ? "Actualizar" : "Crear")</span>
+                            <span class="btn-loader">
+                                <span class="loader-bar"></span>
+                                <span class="loader-bar"></span>
+                                <span class="loader-bar"></span>
+                            </span>
                         </button>
+
                         @if (isEditMode)
                         {
-                            <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
+                            <button type="button" class="user-btn cancel" @onclick="CancelEdit">Cancelar</button>
                         }
                     </div>
                 </EditForm>
             </div>
-        </div>
 
-        <!-- TABLA -->
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">📋 Actividades de la Compañía</h5>
+            <div class="user-table">
+                <h3>Actividades de la Compañía</h3>
 
                 @if (activities == null)
                 {
@@ -91,7 +147,7 @@
                 }
                 else
                 {
-                    <table class="table table-striped align-middle">
+                    <table class="user-table-content">
                         <thead>
                             <tr>
                                 <th>Título</th>
@@ -100,7 +156,7 @@
                                 <th>Fin</th>
                                 <th>Precio</th>
                                 <th>Estado</th>
-                                <th class="text-center">Acciones</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -113,10 +169,10 @@
                                     <td>@(a.EndAt?.ToString("dd/MM/yyyy") ?? "")</td>
                                     <td>@($"{a.Price} {a.Currency}")</td>
                                     <td>@a.Status</td>
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-warning me-2" @onclick="@(() => EditActivity(a))">✏️</button>
-                                        <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteActivity(a.Id))">🗑️</button>
-                                    <button class="btn btn-primary" @onclick="() => NavigateToSelectCategory(a.Id)"> Seleccionar Categoría  </button>
+                                    <td>
+                                        <button class="user-btn small edit" @onclick="@(() => EditActivity(a))">✏️</button>
+                                        <button class="user-btn small delete" @onclick="@(() => DeleteActivity(a.Id))">🗑️</button>
+                                        <button class="user-btn small" @onclick="() => NavigateToSelectCategory(a.Id)">Seleccionar Categoría</button>
                                     </td>
                                 </tr>
                             }
@@ -125,6 +181,7 @@
                 }
             </div>
         </div>
+    </div>
     
 </ProtectedPage>
 

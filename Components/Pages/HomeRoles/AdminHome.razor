@@ -4,14 +4,44 @@
 @rendermode InteractiveServer
 
 <ProtectedPage>
-    <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
-        <div class="text-center">
-            <h1 class="mb-4">👋 Bienvenida a la App</h1>
-            <p class="mb-4">Gestiona usuarios fácilmente desde aquí.</p>
-            <button class="btn btn-primary btn-lg" @onclick="GoUsers">Usuarios</button>
-            <button class="btn btn-primary btn-lg" @onclick="GoCompanies">Empresas</button>
-            <button class="btn btn-primary btn-lg" @onclick="GoActivities">Actividades</button>
-            <button class="btn btn-primary btn-lg" @onclick="GoCategories">Categorias</button>
+    <div class="main-page">
+        <div class="main-card">
+            <h1 class="main-title">Bienvenido a MANAGMENT</h1>
+            <p class="main-subtitle">Gestiona la app fácilmente desde aquí.</p>
+            <div class="main-actions">
+                <button class="main-btn" @onclick="GoUsers">
+                    <span class="btn-text">Usuarios</span>
+                    <span class="btn-loader">
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                    </span>
+                </button>
+                <button class="main-btn" @onclick="GoCompanies">
+                    <span class="btn-text">Empresas</span>
+                    <span class="btn-loader">
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                    </span>
+                </button>
+                <button class="main-btn" @onclick="GoActivities">
+                    <span class="btn-text">Actividades</span>
+                    <span class="btn-loader">
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                    </span>
+                </button>
+                <button class="main-btn" @onclick="GoCategories">
+                    <span class="btn-text">Categorías</span>
+                    <span class="btn-loader">
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                    </span>
+                </button>
+            </div>
         </div>
     </div>
 </ProtectedPage>

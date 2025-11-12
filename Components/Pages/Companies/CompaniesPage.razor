@@ -8,106 +8,121 @@
 @rendermode InteractiveServer
 
 <ProtectedPage>
-    <h3 class="mb-4">🏢 Gestión de Compañías</h3>
+    <div class="user-container">
+        <div class="user-card">
+            <div class="user-header">
+                <h2>Gestión de Empresas</h2>
+            </div>
 
-    <!-- FORMULARIO -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">@((isEditMode ? "Editar Compañía" : "Agregar Nueva Compañía"))</h5>
+            <div class="user-form">
+                <h3>@(isEditMode ? "Editar Empresa" : "Agregar Nueva Empresa")</h3>
 
-            <EditForm Model="@companyForm" OnValidSubmit="@HandleSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+                <EditForm Model="@companyForm" OnValidSubmit="@HandleSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Nombre</label>
-                        <InputText class="form-control" @bind-Value="companyForm.Name" />
+                    <div class="user-grid">
+                        <div class="user-group">
+                            <label class="user-label">Nombre</label>
+                            <div class="user-input-wrapper">
+                                <InputText @bind-Value="companyForm.Name" placeholder="Nombre de la compañía" />
+                            </div>
+                        </div>
+
+                        <div class="user-group">
+                            <label class="user-label">Descripción</label>
+                            <div class="user-input-wrapper">
+                                <InputText @bind-Value="companyForm.Description" placeholder="Descripción breve" />
+                            </div>
+                        </div>
+
+                        <div class="user-group">
+                            <label class="user-label">Dueño (Usuarios tipo Company)</label>
+                            <div class="user-input-wrapper">
+                                <InputSelect @bind-Value="companyForm.OwnerUserId">
+                                    <option value="0">-- Seleccione un usuario --</option>
+                                    @foreach (var user in companyUsers)
+                                    {
+                                        <option value="@user.Id">@($"{user.Username} ({user.Email})")</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+
+                        <div class="user-group">
+                            <label class="user-label">Activa</label>
+                            <div class="checkbox-wrapper">
+                                <InputCheckbox @bind-Value="companyForm.IsActive" />
+                                <label class="checkbox-label">Compañía activa</label>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label">Descripción</label>
-                        <InputText class="form-control" @bind-Value="companyForm.Description" />
-                    </div>
+                    <div class="user-actions">
+                        <button class="user-btn" type="submit">
+                            <span class="btn-text">@(isEditMode ? "Actualizar" : "Crear")</span>
+                            <span class="btn-loader">
+                                <span class="loader-bar"></span>
+                                <span class="loader-bar"></span>
+                                <span class="loader-bar"></span>
+                            </span>
+                        </button>
 
-                    <div class="col-md-6">
-                        <label class="form-label">Dueño (Usuarios tipo Company)</label>
-                        <InputSelect class="form-select" @bind-Value="companyForm.OwnerUserId">
-                            <option value="0">-- Seleccione un usuario --</option>
-                            @foreach (var user in companyUsers)
-                            {
-                                <option value="@user.Id">@($"{user.Username} ({user.Email})")</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Activa</label><br />
-                        <InputCheckbox @bind-Value="companyForm.IsActive" />
-                    </div>
-                </div>
-
-                <div class="mt-3">
-                    <button class="btn btn-primary me-2" type="submit">
-                        @(isEditMode ? "Actualizar" : "Crear")
-                    </button>
-                    @if (isEditMode)
-                    {
-                        <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
-                    }
-                </div>
-            </EditForm>
-        </div>
-    </div>
-
-    <!-- TABLA -->
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">📋 Listado de Compañías</h5>
-
-            @if (companies == null)
-            {
-                <p>Cargando...</p>
-            }
-            else if (!companies.Any())
-            {
-                <p>No hay compañías registradas.</p>
-            }
-            else
-            {
-                <table class="table table-striped align-middle">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Descripción</th>
-                            <th>Dueño</th>
-                            <th>Rating</th>
-                            <th>Activa</th>
-                            <th>Creada</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var c in companies)
+                        @if (isEditMode)
                         {
-                            <tr>
-                                <td>@c.Name</td>
-                                <td>@c.Description</td>
-                                <td>
-                                    @companyUsers.FirstOrDefault(u => u.Id == c.OwnerUserId)?.Username ?? $"ID {c.OwnerUserId}"
-                                </td>
-                                <td>@($"{c.AvgRating:F1} ⭐ ({c.RatingCount})")</td>
-                                <td>@(c.IsActive ? "✅" : "❌")</td>
-                                <td>@c.CreatedAt.ToString("dd/MM/yyyy")</td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-warning me-2" @onclick="@(() => EditCompany(c))">✏️</button>
-                                    <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteCompany(c.Id))">🗑️</button>
-                                </td>
-                            </tr>
+                            <button type="button" class="user-btn cancel" @onclick="CancelEdit">Cancelar</button>
                         }
-                    </tbody>
-                </table>
-            }
+                    </div>
+                </EditForm>
+            </div>
+
+            <div class="user-table">
+                <h3>Listado de Empresas</h3>
+
+                @if (companies == null)
+                {
+                    <p>Cargando...</p>
+                }
+                else if (!companies.Any())
+                {
+                    <p>No hay empresas registradas.</p>
+                }
+                else
+                {
+                    <table class="user-table-content">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Rating</th>
+                                <th>Activa</th>
+                                <th>Creada</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in companies)
+                            {
+                                <tr>
+                                    <td>@c.Name</td>
+                                    <td>@c.Description</td>
+                                    <td>@($"{c.AvgRating:F1} ⭐ ({c.RatingCount})")</td>
+                                    <td>
+                                        <span class="user-badge @(c.IsActive ? "active" : "inactive")">
+                                            @(c.IsActive ? "Activo" : "Inactivo")
+                                        </span>
+                                    </td>
+                                    <td>@c.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <button class="user-btn small edit" @onclick="@(() => EditCompany(c))">✏️</button>
+                                        <button class="user-btn small delete" @onclick="@(() => DeleteCompany(c.Id))">🗑️</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
         </div>
     </div>
 </ProtectedPage>

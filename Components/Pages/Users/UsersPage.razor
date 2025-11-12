@@ -6,104 +6,126 @@
 @rendermode InteractiveServer
 
 <ProtectedPage>
-    <h3 class="mb-4">👤 Gestión de Usuarios</h3>
+    <div class="user-container">
+        <div class="user-card">
+            <div class="user-header">
+                <h2>👤 Gestión de Usuarios</h2>
+            </div>
 
-    <!-- FORMULARIO -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">@((isEditMode ? "Editar Usuario" : "Agregar Usuario"))</h5>
+            <!-- FORMULARIO -->
+            <div class="user-form">
+                <h3>@(isEditMode ? "Editar Usuario" : "Agregar Usuario")</h3>
 
-            <EditForm Model="@userForm" OnValidSubmit="@HandleSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+                <EditForm Model="@userForm" OnValidSubmit="@HandleSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Nombre</label>
-                        <InputText class="form-control" @bind-Value="userForm.Username" />
+                    <div class="user-grid">
+                        <div class="user-group">
+                            <label class="user-label">Nombre</label>
+                            <div class="user-input-wrapper">
+                                <InputText @bind-Value="userForm.Username" placeholder="Nombre de usuario" />
+                            </div>
+                        </div>
+
+                        <div class="user-group">
+                            <label class="user-label">Correo</label>
+                            <div class="user-input-wrapper">
+                                <InputText @bind-Value="userForm.Email" type="email" placeholder="Correo electrónico" />
+                            </div>
+                        </div>
+
+                        <div class="user-group">
+                            <label class="user-label">Rol</label>
+                            <div class="user-input-wrapper">
+                                <InputSelect @bind-Value="userForm.Role">
+                                    <option value="">Selecciona un rol</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Company">Company</option>
+                                    <option value="User">User</option>
+                                </InputSelect>
+                            </div>
+                        </div>
+
+                        <div class="user-group">
+                            <label class="user-label">Contraseña</label>
+                            <div class="user-input-wrapper">
+                                <InputText @bind-Value="userForm.Password" type="password" placeholder="Contraseña" />
+                            </div>
+                        </div>
+                        <div class="user-group">
+                            <label class="user-label">Estado</label>
+                            <div class="checkbox-wrapper">
+                                <InputCheckbox @bind-Value="userForm.IsActive" />
+                                <label class="checkbox-label">Usuario activo</label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Correo</label>
-                        <InputText class="form-control" @bind-Value="userForm.Email" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Rol</label>
-                        <InputText class="form-control" @bind-Value="userForm.Role" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Contraseña</label>
-                        <InputText type="password" class="form-control" @bind-Value="userForm.Password" />
-                    </div>
-                </div>
 
-                <div class="mt-3">
-                    <button class="btn btn-primary me-2" type="submit">
-                        @(isEditMode ? "Actualizar" : "Crear")
-                    </button>
-                    @if (isEditMode)
-                    {
-                        <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
-                    }
-                </div>
-            </EditForm>
-        </div>
-    </div>
+                    <div class="user-actions">
+                        <button class="user-btn" type="submit">
+                            <span class="btn-text">@(isEditMode ? "Actualizar" : "Crear")</span>
+                            <span class="btn-loader">
+                                <span class="loader-bar"></span>
+                                <span class="loader-bar"></span>
+                                <span class="loader-bar"></span>
+                            </span>
+                        </button>
 
-    <!-- TABLA -->
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Usuarios registrados</h5>
-
-            @if (users == null)
-            {
-                <p>Cargando...</p>
-            }
-            else if (!users.Any())
-            {
-                <p>No hay usuarios registrados.</p>
-            }
-            else
-            {
-                <table class="table table-striped align-middle">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Rol</th>
-                            <th>Activo</th>
-                            <th style="width:150px;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var u in users)
+                        @if (isEditMode)
                         {
-                            <tr>
-                                <td>@u.Username</td>
-                                <td>@u.Email</td>
-                                <td>@u.Role</td>
-                                <td>
-                                    @if (u.IsActive)
-                                    {
-                                        <span class="badge bg-success">Activo</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">Inactivo</span>
-                                    }
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning me-2" @onclick="@(() => EditUser(u))">
-                                        ✏️ Editar
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteUser(u.Id))">
-                                        🗑️ Eliminar
-                                    </button>
-                                </td>
-                            </tr>
+                            <button type="button" class="user-btn cancel" @onclick="CancelEdit">Cancelar</button>
                         }
-                    </tbody>
-                </table>
-            }
+                    </div>
+                </EditForm>
+            </div>
+
+            <!-- TABLA -->
+            <div class="user-table">
+                <h3>Usuarios registrados</h3>
+
+                @if (users == null)
+                {
+                    <p>Cargando...</p>
+                }
+                else if (!users.Any())
+                {
+                    <p>No hay usuarios registrados.</p>
+                }
+                else
+                {
+                    <table class="user-table-content">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Activo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var u in users)
+                            {
+                                <tr>
+                                    <td>@u.Username</td>
+                                    <td>@u.Email</td>
+                                    <td>@u.Role</td>
+                                    <td>
+                                        <span class="user-badge @(u.IsActive ? "active" : "inactive")">
+                                            @(u.IsActive ? "Activo" : "Inactivo")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="user-btn small edit" @onclick="@(() => EditUser(u))">✏️ Editar</button>
+                                        <button class="user-btn small delete" @onclick="@(() => DeleteUser(u.Id))">🗑️ Eliminar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
         </div>
     </div>
 </ProtectedPage>

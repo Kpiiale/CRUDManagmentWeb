@@ -7,115 +7,141 @@
 @rendermode InteractiveServer
 
 <ProtectedPage>
-    <h3 class="mb-4">👥 Gestión de Empleados</h3>
+    <div class="user-container">
+        <div class="user-card">
+            <div class="user-header">
+                <h2>👥 Gestión de Empleados</h2>
+            </div>
 
-    <!-- FORMULARIO -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">@((isEditMode ? "Editar Empleado" : "Agregar Nuevo Empleado"))</h5>
+            <div class="user-form">
+                <h3>@(isEditMode ? "Editar Empleado" : "Agregar Nuevo Empleado")</h3>
 
-            <EditForm Model="@employeeForm" OnValidSubmit="@HandleSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+                <EditForm Model="@employeeForm" OnValidSubmit="@HandleSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Correo</label>
-                        <InputText class="form-control" @bind-Value="employeeForm.Email" />
-                        <ValidationMessage For="@(() => employeeForm.Email)" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Rol</label>
-                        <InputText class="form-control" @bind-Value="employeeForm.RoleInCompany" />
-                        <ValidationMessage For="@(() => employeeForm.RoleInCompany)" />
-                    </div>
-
-                    @if (!isEditMode)
-                    {
-                        <div class="col-md-6">
-                            <label class="form-label">Usuario</label>
-                            <InputText class="form-control" @bind-Value="employeeForm.Username" />
-                            <ValidationMessage For="@(() => employeeForm.Username)" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Contraseña</label>
-                            <InputText class="form-control" type="password" @bind-Value="employeeForm.Password" />
-                            <ValidationMessage For="@(() => employeeForm.Password)" />
-                        </div>
-                    }
-                    @if (isEditMode)
-                    {
-                        <div class="col-md-6">
-                            <label class="form-label">Cambiar contraseña</label><br />
-                            <InputCheckbox @bind-Value="changePassword" />
+                    <div class="user-grid">
+                        <div class="user-group">
+                            <label class="user-label">Correo</label>
+                            <div class="user-input-wrapper">
+                                <InputText @bind-Value="employeeForm.Email" placeholder="Correo electrónico" />
+                            </div>
+                            <ValidationMessage For="@(() => employeeForm.Email)" />
                         </div>
 
-                        @if (changePassword)
+                        <div class="user-group">
+                            <label class="user-label">Rol</label>
+                            <div class="user-input-wrapper">
+                                <InputText @bind-Value="employeeForm.RoleInCompany" placeholder="Rol en la empresa" />
+                            </div>
+                            <ValidationMessage For="@(() => employeeForm.RoleInCompany)" />
+                        </div>
+
+                        @if (!isEditMode)
                         {
-                            <div class="col-md-6">
-                                <label class="form-label">Nueva contraseña</label>
-                                <InputText class="form-control" type="password" @bind-Value="employeeForm.Password" />
+                            <div class="user-group">
+                                <label class="user-label">Usuario</label>
+                                <div class="user-input-wrapper">
+                                    <InputText @bind-Value="employeeForm.Username" placeholder="Nombre de usuario" />
+                                </div>
+                                <ValidationMessage For="@(() => employeeForm.Username)" />
+                            </div>
+
+                            <div class="user-group">
+                                <label class="user-label">Contraseña</label>
+                                <div class="user-input-wrapper">
+                                    <InputText type="password" @bind-Value="employeeForm.Password" placeholder="Contraseña" />
+                                </div>
                                 <ValidationMessage For="@(() => employeeForm.Password)" />
                             </div>
                         }
-                    }
-                </div>
 
-                <div class="mt-3">
-                    <button class="btn btn-primary me-2" type="submit">
-                        @(isEditMode ? "Actualizar" : "Crear")
-                    </button>
-                    @if (isEditMode)
-                    {
-                        <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
-                    }
-                </div>
-            </EditForm>
-        </div>
-    </div>
-
-    <!-- TABLA -->
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">📋 Empleados Registrados</h5>
-
-            @if (employees == null)
-            {
-                <p>Cargando...</p>
-            }
-            else if (!employees.Any())
-            {
-                <p>No hay empleados registrados.</p>
-            }
-            else
-            {
-                <table class="table table-striped align-middle">
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Correo</th>
-                            <th>Rol</th>
-                            <th>Activo</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var e in employees)
+                        @if (isEditMode)
                         {
-                            <tr>
-                                <td>@e.Username</td>
-                                <td>@e.Email</td>
-                                <td>@e.RoleInCompany</td>
-                                <td>@(e.IsActive ? "✅" : "❌")</td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-warning me-2" @onclick="@(() => EditEmployee(e))">✏️</button>
-                                    <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteEmployee(e.Id))">🗑️</button>
-                                </td>
-                            </tr>
+                            <div class="user-group">
+                                <label class="user-label">Cambiar contraseña</label>
+                                <div class="checkbox-wrapper">
+                                    <InputCheckbox @bind-Value="changePassword" />
+                                    <label class="checkbox-label">Actualizar contraseña</label>
+                                </div>
+                            </div>
+
+                            @if (changePassword)
+                            {
+                                <div class="user-group">
+                                    <label class="user-label">Nueva contraseña</label>
+                                    <div class="user-input-wrapper">
+                                        <InputText type="password" @bind-Value="employeeForm.Password" placeholder="Nueva contraseña" />
+                                    </div>
+                                    <ValidationMessage For="@(() => employeeForm.Password)" />
+                                </div>
+                            }
                         }
-                    </tbody>
-                </table>
-            }
+                    </div>
+
+                    <div class="user-actions">
+                        <button class="user-btn" type="submit">
+                            <span class="btn-text">@(isEditMode ? "Actualizar" : "Crear")</span>
+                            <span class="btn-loader">
+                                <span class="loader-bar"></span>
+                                <span class="loader-bar"></span>
+                                <span class="loader-bar"></span>
+                            </span>
+                        </button>
+
+                        @if (isEditMode)
+                        {
+                            <button type="button" class="user-btn cancel" @onclick="CancelEdit">Cancelar</button>
+                        }
+                    </div>
+                </EditForm>
+            </div>
+
+            <div class="user-table">
+                <h3>📋 Empleados Registrados</h3>
+
+                @if (employees == null)
+                {
+                    <p>Cargando...</p>
+                }
+                else if (!employees.Any())
+                {
+                    <p>No hay empleados registrados.</p>
+                }
+                else
+                {
+                    <table class="user-table-content">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Correo</th>
+                                <th>Rol</th>
+                                <th>Activo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var e in employees)
+                            {
+                                <tr>
+                                    <td>@e.Username</td>
+                                    <td>@e.Email</td>
+                                    <td>@e.RoleInCompany</td>
+                                    <td>
+                                        <span class="user-badge @(e.IsActive ? "active" : "inactive")">
+                                            @(e.IsActive ? "Activo" : "Inactivo")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="user-btn small edit" @onclick="@(() => EditEmployee(e))">✏️</button>
+                                        <button class="user-btn small delete" @onclick="@(() => DeleteEmployee(e.Id))">🗑️</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
         </div>
     </div>
 </ProtectedPage>

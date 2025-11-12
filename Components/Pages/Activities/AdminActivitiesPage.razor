@@ -7,73 +7,79 @@
 
 @rendermode InteractiveServer
 
-<h3 class="mb-4">🏢 Actividades por Empresa</h3>
-<p class="text-muted">Selecciona una empresa para ver solo sus actividades.</p>
-
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="alert alert-danger">@errorMessage</div>
-}
-else if (companies == null)
-{
-    <p>Cargando empresas...</p>
-}
-else
-{
-    <div class="mb-3">
-        <label class="form-label fw-bold">Seleccionar Empresa:</label>
-        <select class="form-select" @onchange="OnCompanyChanged">
-            <option value="0">-- Seleccionar empresa --</option>
-            @foreach (var c in companies)
-            {
-                <option value="@c.Id">@c.Name</option>
-            }
-        </select>
-    </div>
-
-    @if (activities == null)
-    {
-        <p>Cargando actividades...</p>
-    }
-    else if (!filteredActivities.Any())
-    {
-        <p>No hay actividades registradas para esta empresa.</p>
-    }
-    else
-    {
-        <div class="card mt-3">
-            <div class="card-body">
-                <h5 class="card-title">📋 Actividades de @selectedCompanyName</h5>
-
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>Título</th>
-                            <th>Ubicación</th>
-                            <th>Inicio</th>
-                            <th>Fin</th>
-                            <th>Precio</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var a in filteredActivities)
-                        {
-                            <tr>
-                                <td>@a.Title</td>
-                                <td>@a.LocationText</td>
-                                <td>@(a.StartAt?.ToString("dd/MM/yyyy") ?? "-")</td>
-                                <td>@(a.EndAt?.ToString("dd/MM/yyyy") ?? "-")</td>
-                                <td>@($"{a.Price} {a.Currency}")</td>
-                                <td>@a.Status</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+<div class="user-container">
+    <div class="user-card">
+        <div class="user-header">
+            <h2>Actividades por Empresa</h2>
+            <p class="text-muted">Selecciona una empresa para ver solo sus actividades.</p>
         </div>
-    }
-}
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message show">@errorMessage</div>
+        }
+        else if (companies == null)
+        {
+            <p>Cargando empresas...</p>
+        }
+        else
+        {
+            <div class="user-group">
+                <label class="user-label">Seleccionar Empresa:</label>
+                <div class="user-input-wrapper">
+                    <select @onchange="OnCompanyChanged">
+                        <option value="0">-- Seleccionar empresa --</option>
+                        @foreach (var c in companies)
+                        {
+                            <option value="@c.Id">@c.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            @if (activities == null)
+            {
+                <p>Cargando actividades...</p>
+            }
+            else if (!filteredActivities.Any())
+            {
+                <p>No hay actividades registradas para esta empresa.</p>
+            }
+            else
+            {
+                <div class="user-table">
+                    <h3>Actividades de @selectedCompanyName</h3>
+
+                    <table class="user-table-content">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Ubicación</th>
+                                <th>Inicio</th>
+                                <th>Fin</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var a in filteredActivities)
+                            {
+                                <tr>
+                                    <td>@a.Title</td>
+                                    <td>@a.LocationText</td>
+                                    <td>@(a.StartAt?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                    <td>@(a.EndAt?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                    <td>@($"{a.Price} {a.Currency}")</td>
+                                    <td>@a.Status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    </div>
+</div>
 
 @code {
     private List<CompanyDto>? companies;
@@ -88,7 +94,7 @@ else
         try
         {
             companies = await CompanyService.GetAllAsync();
-            activities = await ActivityService.GetAllAsync(0); // Trae todas y filtra en front
+            activities = await ActivityService.GetAllAsync(0); 
         }
         catch (Exception ex)
         {

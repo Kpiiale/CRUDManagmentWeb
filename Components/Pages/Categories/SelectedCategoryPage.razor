@@ -8,37 +8,49 @@
 @rendermode InteractiveServer
 
 
-<PageTitle>Asignar Categoría</PageTitle>
+<div class="user-container">
+    <div class="user-card">
+        <div class="user-header">
+            <h2>Asignar Categoría a la Actividad #@ActivityId</h2>
+        </div>
+        <hr />
 
-<h3>Asignar Categoría a la Actividad #@ActivityId</h3>
-<hr />
+        @if (allCategories is null)
+        {
+            <p><em>Cargando categorías...</em></p>
+        }
+        else
+        {
+            <div class="user-group">
+                <label class="user-label">Selecciona una categoría:</label>
+                <div class="user-input-wrapper">
+                    <select @bind="selectedCategoryId">
+                        <option value="0">-- Elige una opción --</option>
+                        @foreach (var category in allCategories)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
 
-@if (allCategories is null)
-{
-    <p><em>Cargando categorías...</em></p>
-}
-else
-{
-    <div class="mb-3">
-        <label class="form-label">Selecciona una categoría:</label>
-        <select class="form-select" @bind="selectedCategoryId">
-            <option value="0">-- Elige una opción --</option>
-            @foreach (var category in allCategories)
-            {
-                <option value="@category.Id">@category.Name</option>
-            }
-        </select>
+            <div class="user-actions">
+                <button class="user-btn" @onclick="HandleSave" disabled="@(selectedCategoryId == 0)">
+                    <span class="btn-text">Asignar y Volver</span>
+                    <span class="btn-loader">
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                    </span>
+                </button>
+
+                <button class="user-btn cancel" @onclick="GoBack">
+                    <span class="btn-text">Cancelar</span>
+                </button>
+            </div>
+        }
     </div>
-
-    <button class="btn btn-primary" @onclick="HandleSave" disabled="@(selectedCategoryId == 0)">
-        Asignar y Volver
-    </button>
-    <button class="btn btn-secondary" @onclick="GoBack">
-        Cancelar
-    </button>
-}
-
-
+</div>
 @code {
     [Parameter]
     public int ActivityId { get; set; }
@@ -46,11 +58,6 @@ else
     private List<CategoryDto>? allCategories;
     private int selectedCategoryId;
 
-    /// <summary>
-    /// Con @rendermode InteractiveServer, OnInitializedAsync se ejecuta en un
-    /// entorno interactivo, por lo que las llamadas a servicios que usan
-    /// IJSRuntime son completamente seguras aquí.
-    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         allCategories = await CategoryService.GetAllAsync();

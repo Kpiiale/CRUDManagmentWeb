@@ -4,12 +4,28 @@
 @rendermode InteractiveServer
 
 <ProtectedPage>
-    <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
-        <div class="text-center">
-            <h1 class="mb-4">👋 Bienvenida a la App</h1>
-            <p class="mb-4">Gestiona empleados fácilmente desde aquí.</p>
-            <button class="btn btn-primary btn-lg" @onclick="GoEmployees">Employees</button>
-            <button class="btn btn-primary btn-lg" @onclick="GoActivities">Actividades</button>
+    <div class="main-page">
+        <div class="main-card">
+            <h1 class="main-title">Bienvenido a tu empresa</h1>
+            <p class="main-subtitle">Gestiona empleados y actividades fácilmente desde aquí.</p>
+            <div class="main-actions">
+                <button class="main-btn" @onclick="GoEmployees">
+                    <span class="btn-text">Empleados</span>
+                    <span class="btn-loader">
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                    </span>
+                </button>
+                <button class="main-btn" @onclick="GoActivities">
+                    <span class="btn-text">Actividades</span>
+                    <span class="btn-loader">
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                    </span>
+                </button>
+            </div>
         </div>
     </div>
 </ProtectedPage>
