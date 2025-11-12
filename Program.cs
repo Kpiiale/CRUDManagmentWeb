@@ -14,6 +14,9 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<CompanyService>();
 builder.Services.AddScoped<EmployeeService>();
 builder.Services.AddScoped<ActivityService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<ActivityCategoryService>();
+
 
 var app = builder.Build();
 

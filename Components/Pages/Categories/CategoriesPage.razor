@@ -1,0 +1,156 @@
+﻿@page "/admin/categories"
+@using CRUDManagmentWeb.Models.Category
+@inject CRUDManagmentWeb.Services.CategoryService CategoryService
+@inject IJSRuntime JS
+@using CRUDManagmentWeb.Components.Pages.Auth
+@rendermode InteractiveServer
+
+<ProtectedPage >
+    <h3 class="mb-4">📚 Gestión de Categorías</h3>
+
+    <!-- Formulario de creación / edición -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">@((isEditMode ? "Editar Categoría" : "Agregar Nueva Categoría"))</h5>
+
+            <EditForm Model="@categoryForm" OnValidSubmit="@HandleSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre</label>
+                        <InputText class="form-control" @bind-Value="categoryForm.Name" />
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button class="btn btn-primary me-2" type="submit">
+                        @(isEditMode ? "Actualizar" : "Crear")
+                    </button>
+                    @if (isEditMode)
+                    {
+                        <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
+                    }
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- Tabla de categorías -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">📋 Lista de Categorías</h5>
+
+            @if (categories == null)
+            {
+                <p>Cargando...</p>
+            }
+            else if (!categories.Any())
+            {
+                <p>No hay categorías registradas.</p>
+            }
+            else
+            {
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Creada por</th>
+                            <th>Fecha de creación</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in categories)
+                        {
+                            <tr>
+                                <td>@c.Name</td>
+                                <td>@c.CreatedBy</td>
+                                <td>@c.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-warning me-2" @onclick="@(() => EditCategory(c))">✏️</button>
+                                    <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteCategory(c.Id))">🗑️</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</ProtectedPage>
+
+@code {
+    private List<CategoryDto>? categories;
+    private CreateCategoryRequest categoryForm = new();
+    private bool isEditMode = false;
+    private int editId;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadCategories();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadCategories()
+    {
+        categories = await CategoryService.GetAllAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        bool success;
+
+        if (isEditMode)
+        {
+            success = await CategoryService.UpdateAsync(editId, new UpdateCategoryRequest { Name = categoryForm.Name });
+        }
+        else
+        {
+            success = await CategoryService.CreateAsync(new CreateCategoryRequest { Name = categoryForm.Name });
+        }
+
+        if (success)
+        {
+            await JS.InvokeVoidAsync("alert", "✅ Categoría guardada correctamente");
+            await LoadCategories();
+            CancelEdit();
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "❌ Error al guardar la categoría");
+        }
+    }
+
+    private void EditCategory(CategoryDto category)
+    {
+        isEditMode = true;
+        editId = category.Id;
+        categoryForm.Name = category.Name;
+    }
+
+    private void CancelEdit()
+    {
+        isEditMode = false;
+        editId = 0;
+        categoryForm = new();
+    }
+
+    private async Task DeleteCategory(int id)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", "¿Eliminar esta categoría?");
+        if (confirmed)
+        {
+            var success = await CategoryService.DeleteAsync(id);
+            if (success)
+            {
+                await JS.InvokeVoidAsync("alert", "🗑️ Categoría eliminada");
+                await LoadCategories();
+            }
+        }
+    }
+}

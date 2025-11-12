@@ -5,32 +5,52 @@
 @inject CRUDManagmentWeb.Services.AuthService AuthService
 @inject NavigationManager NavigationManager
 
-<h3>Iniciar Sesión</h3>
-
-<div class="login-form">
-    <EditForm Model="@loginInput" OnValidSubmit="@HandleLogin">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <div class="form-group">
-            <label>Usuario</label>
-            <InputText @bind-Value="loginInput.Username" class="form-control" />
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            
+            <h2>Iniciar Sesión</h2>
+            <p>Accede a tu cuenta</p>
         </div>
 
-        <div class="form-group">
-            <label>Contraseña</label>
-            <InputText @bind-Value="loginInput.Password" type="password" class="form-control" />
+        <EditForm Model="@loginInput" OnValidSubmit="@HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label class="form-label">Usuario</label>
+                <div class="input-wrapper">
+                    <InputText @bind-Value="loginInput.Username" placeholder="Ingresa tu usuario" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Contraseña</label>
+                <div class="input-wrapper password-wrapper">
+                    <InputText @bind-Value="loginInput.Password" type="password" placeholder="Ingresa tu contraseña" />
+                    <!-- Puedes agregar un botón de mostrar contraseña aquí si lo deseas -->
+                </div>
+            </div>
+
+            <button type="submit" class="login1-btn">
+                <span class="btn-text">Ingresar</span>
+                <span class="btn-loader">
+                    <span class="loader-bar"></span>
+                    <span class="loader-bar"></span>
+                    <span class="loader-bar"></span>
+                </span>
+            </button>
+        </EditForm>
+
+        <div class="signup-link">
+            <p>¿No tienes una cuenta? <a href="/register">Regístrate aquí</a></p>
         </div>
 
-        <button type="submit" class="btn btn-primary">Ingresar</button>
-    </EditForm>
-
-    <p>¿No tienes una cuenta? <a href="/register">Regístrate aquí</a></p>
-
-    @if (!string.IsNullOrEmpty(ErrorMessage))
-    {
-        <div class="alert alert-danger mt-2">@ErrorMessage</div>
-    }
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="error-message show">@ErrorMessage</div>
+        }
+    </div>
 </div>
 
 @code {

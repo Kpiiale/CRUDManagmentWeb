@@ -4,6 +4,7 @@
 @inject CRUDManagmentWeb.Services.ActivityService ActivityService
 @inject CRUDManagmentWeb.Services.CompanyService CompanyService
 @inject IJSRuntime JS
+@inject NavigationManager Nav
 @using CRUDManagmentWeb.Components.Pages.Auth
 @rendermode InteractiveServer
 
@@ -115,6 +116,7 @@
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-warning me-2" @onclick="@(() => EditActivity(a))">✏️</button>
                                         <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteActivity(a.Id))">🗑️</button>
+                                    <button class="btn btn-primary" @onclick="() => NavigateToSelectCategory(a.Id)"> Seleccionar Categoría  </button>
                                     </td>
                                 </tr>
                             }
@@ -138,8 +140,16 @@
     {
         if (firstRender)
         {
-            companies = await CompanyService.GetAllAsync();
-            StateHasChanged();
+            try
+            {
+                await LoadActivities();
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error en carga inicial: {ex.Message}");
+                await JS.InvokeVoidAsync("alert", $"Error al cargar la página: {ex.Message}");
+            }
         }
     }
 
@@ -251,5 +261,9 @@
                 await LoadActivities();
             }
         }
+    }
+    private void NavigateToSelectCategory(int activityId)
+    {
+        Nav.NavigateTo($"/activities/select-category/{activityId}");
     }
 }

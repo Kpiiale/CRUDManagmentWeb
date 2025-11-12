@@ -59,5 +59,13 @@ namespace CRUDManagmentWeb.Services
             var response = await _httpClient.DeleteAsync($"{BaseUrl}/{id}");
             return response.IsSuccessStatusCode;
         }
+
+        public async Task AddCategoryAsync(int activityId, int categoryId)
+        {
+            await SetAuthHeaderAsync();
+            var req = new { CategoryId = categoryId };
+            await _httpClient.PostAsJsonAsync($"{BaseUrl}/{activityId}/categories", req);
+        }
+
     }
 }
