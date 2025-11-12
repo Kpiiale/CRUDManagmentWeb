@@ -10,7 +10,7 @@
             <p class="mb-4">Gestiona usuarios fácilmente desde aquí.</p>
             <button class="btn btn-primary btn-lg" @onclick="GoUsers">Usuarios</button>
             <button class="btn btn-primary btn-lg" @onclick="GoCompanies">Empresas</button>
-            <button class="btn btn-primary btn-lg" @onclick="GoActivities">Actividades</button>
+            
         </div>
     </div>
 </ProtectedPage>
@@ -24,10 +24,7 @@
     {
         NavManager.NavigateTo("/admin/companies");
     }
-    private void GoActivities()
-    {
-        NavManager.NavigateTo("/company/activities");
-    }
+    
 
     
 }

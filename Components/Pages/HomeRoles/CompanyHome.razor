@@ -9,6 +9,7 @@
             <h1 class="mb-4">👋 Bienvenida a la App</h1>
             <p class="mb-4">Gestiona empleados fácilmente desde aquí.</p>
             <button class="btn btn-primary btn-lg" @onclick="GoEmployees">Employees</button>
+            <button class="btn btn-primary btn-lg" @onclick="GoActivities">Actividades</button>
         </div>
     </div>
 </ProtectedPage>
@@ -17,5 +18,9 @@
     private void GoEmployees()
     {
         NavManager.NavigateTo("/company/employees");
+    }
+    private void GoActivities()
+    {
+        NavManager.NavigateTo("/company/activities");
     }
 }

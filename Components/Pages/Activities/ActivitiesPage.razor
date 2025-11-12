@@ -9,22 +9,10 @@
 
 <ProtectedPage>
     <h3 class="mb-4">🎯 Gestión de Actividades</h3>
-
-    <!-- Selección de empresa -->
-    <div class="mb-3">
-        <label class="form-label">Selecciona una compañía</label>
-        <InputSelect class="form-select" @bind-Value="selectedCompanyId" @onchange="OnCompanyChanged">
-            <option value="0">-- Selecciona --</option>
-            @foreach (var c in companies)
-            {
-                <option value="@c.Id">@c.Name</option>
-            }
-        </InputSelect>
-    </div>
+   <p class="text-muted">🔍 Mostrando actividades de tu compañía actual</p>
 
     @if (selectedCompanyId > 0)
     {
-        <!-- FORMULARIO -->
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">@((isEditMode ? "Editar Actividad" : "Agregar Nueva Actividad"))</h5>

@@ -37,7 +37,17 @@ namespace CRUDManagmentWeb.Services
         public async Task<bool> UpdateAsync(int id, UpdateUserRequest request)
         {
             await SetAuthHeaderAsync();
-            var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/{id}", request);
+
+            var method = new HttpMethod("PATCH");
+            var url = $"{BaseUrl}/{id}";
+            var json = JsonContent.Create(request);
+            var httpRequest = new HttpRequestMessage(method, url) { Content = json };
+
+            var response = await _httpClient.SendAsync(httpRequest);
+            var content = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"🔄 PATCH usuario: {response.StatusCode} - {content}");
+
             return response.IsSuccessStatusCode;
         }
 
