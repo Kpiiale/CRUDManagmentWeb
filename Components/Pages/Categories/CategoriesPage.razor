@@ -83,7 +83,7 @@
 
 @code {
     private List<CategoryDto>? categories;
-    private CreateCategoryRequest categoryForm = new();
+    private UpdateCategoryRequest categoryForm = new();
     private bool isEditMode = false;
     private int editId;
 
@@ -107,11 +107,12 @@
 
         if (isEditMode)
         {
-            success = await CategoryService.UpdateAsync(editId, new UpdateCategoryRequest { Name = categoryForm.Name });
+            success = await CategoryService.UpdateAsync(editId, categoryForm);
         }
         else
         {
-            success = await CategoryService.CreateAsync(new CreateCategoryRequest { Name = categoryForm.Name });
+            var createRequest = new CreateCategoryRequest { Name = categoryForm.Name };
+            success = await CategoryService.CreateAsync(createRequest);
         }
 
         if (success)
@@ -124,6 +125,7 @@
         {
             await JS.InvokeVoidAsync("alert", "❌ Error al guardar la categoría");
         }
+        Console.WriteLine($"Modo edición: {isEditMode}, ID: {editId}, Nombre: {categoryForm.Name}");
     }
 
     private void EditCategory(CategoryDto category)
