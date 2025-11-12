@@ -11,8 +11,6 @@
     <h3 class="mb-4">🎯 Gestión de Actividades</h3>
    <p class="text-muted">🔍 Mostrando actividades de tu compañía actual</p>
 
-    @if (selectedCompanyId > 0)
-    {
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">@((isEditMode ? "Editar Actividad" : "Agregar Nueva Actividad"))</h5>
@@ -125,7 +123,7 @@
                 }
             </div>
         </div>
-    }
+    
 </ProtectedPage>
 
 @code {
@@ -197,7 +195,7 @@
                 activityForm.Status,
                 activityForm.AllowWaitlist
             );
-            success = await ActivityService.CreateAsync(selectedCompanyId, createRequest);
+            success = await ActivityService.CreateAsync(createRequest);
         }
 
         if (success)

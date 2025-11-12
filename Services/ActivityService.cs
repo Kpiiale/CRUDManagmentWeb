@@ -21,11 +21,10 @@ namespace CRUDManagmentWeb.Services
 
 
 
-        public async Task<bool> CreateAsync(int companyId, CreateActivityRequest request)
+        public async Task<bool> CreateAsync(CreateActivityRequest request)
         {
             await SetAuthHeaderAsync();
-
-            var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}?companyId={companyId}", request);
+            var response = await _httpClient.PostAsJsonAsync(BaseUrl, request);
             var content = await response.Content.ReadAsStringAsync();
 
             Console.WriteLine($"📤 POST actividad: {response.StatusCode} - {content}");
@@ -41,7 +40,17 @@ namespace CRUDManagmentWeb.Services
         public async Task<bool> UpdateAsync(int id, UpdateActivityRequest request)
         {
             await SetAuthHeaderAsync();
-            var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/{id}", request);
+
+            var method = new HttpMethod("PATCH");
+            var url = $"{BaseUrl}/{id}";
+            var json = JsonContent.Create(request);
+            var httpRequest = new HttpRequestMessage(method, url) { Content = json };
+
+            var response = await _httpClient.SendAsync(httpRequest);
+            var content = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"🔄 PATCH actividad: {response.StatusCode} - {content}");
+
             return response.IsSuccessStatusCode;
         }
         public async Task<bool> DeleteAsync(int id)
