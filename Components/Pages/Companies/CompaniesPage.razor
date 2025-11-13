@@ -74,6 +74,12 @@
                             <button type="button" class="user-btn cancel" @onclick="CancelEdit">Cancelar</button>
                         }
                     </div>
+                @if (!string.IsNullOrEmpty(notificationMessage))
+                {
+                    <div class="user-notification @notificationType">
+                        @notificationMessage
+                    </div>
+                }
                 </EditForm>
             </div>
 
@@ -198,13 +204,13 @@
 
         if (success)
         {
-            await JS.InvokeVoidAsync("alert", "Compañía guardada correctamente");
+            ShowNotification("Empresa guardada correctamente", "success");
             await LoadCompanies();
             CancelEdit();
         }
         else
         {
-            await JS.InvokeVoidAsync("alert", "Error al guardar la compañía");
+            ShowNotification("No se pudo guardar la empresa", "error");
         }
     }
 
@@ -237,9 +243,26 @@
             var success = await CompanyService.DeleteAsync(id);
             if (success)
             {
-                await JS.InvokeVoidAsync("alert", "Compañía eliminada");
+                ShowNotification("Empresa eliminada correctamente", "success");
                 await LoadCompanies();
             }
         }
+    }
+    private string notificationMessage = "";
+    private string notificationType = ""; // success, error
+
+    private void ShowNotification(string message, string type)
+    {
+        notificationMessage = message;
+        notificationType = type;
+
+        // Ocultar después de 3 segundos
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            notificationMessage = "";
+            notificationType = "";
+            InvokeAsync(StateHasChanged);
+        });
     }
 }

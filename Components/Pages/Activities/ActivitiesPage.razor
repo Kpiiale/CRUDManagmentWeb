@@ -133,6 +133,12 @@
                             <button type="button" class="user-btn cancel" @onclick="CancelEdit">Cancelar</button>
                         }
                     </div>
+                @if (!string.IsNullOrEmpty(notificationMessage))
+                {
+                    <div class="user-notification @notificationType">
+                        @notificationMessage
+                    </div>
+                }
                 </EditForm>
             </div>
 
@@ -268,13 +274,13 @@
 
         if (success)
         {
-            await JS.InvokeVoidAsync("alert", "Actividad guardada correctamente");
+            ShowNotification("Actividad guardada correctamente", "success");
             await LoadActivities();
             CancelEdit();
         }
         else
         {
-            await JS.InvokeVoidAsync("alert", "Error al guardar la actividad");
+            ShowNotification("No se pudo guardar la actividad", "error");
         }
     }
 
@@ -315,7 +321,7 @@
             var success = await ActivityService.DeleteAsync(id);
             if (success)
             {
-                await JS.InvokeVoidAsync("alert", "Actividad eliminada");
+                ShowNotification("Actividad eliminada correctamente", "success");
                 await LoadActivities();
             }
         }
@@ -323,5 +329,22 @@
     private void NavigateToSelectCategory(int activityId)
     {
         Nav.NavigateTo($"/activities/select-category/{activityId}");
+    }
+    private string notificationMessage = "";
+    private string notificationType = ""; // success, error
+
+    private void ShowNotification(string message, string type)
+    {
+        notificationMessage = message;
+        notificationType = type;
+
+        // Ocultar después de 3 segundos
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            notificationMessage = "";
+            notificationType = "";
+            InvokeAsync(StateHasChanged);
+        });
     }
 }

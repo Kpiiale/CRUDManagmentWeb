@@ -46,7 +46,7 @@ namespace CRUDManagmentWeb.Services
             var response = await _httpClient.SendAsync(httpRequest);
             var content = await response.Content.ReadAsStringAsync();
 
-            Console.WriteLine($"🔄 PATCH usuario: {response.StatusCode} - {content}");
+            Console.WriteLine($"PATCH usuario: {response.StatusCode} - {content}");
 
             return response.IsSuccessStatusCode;
         }

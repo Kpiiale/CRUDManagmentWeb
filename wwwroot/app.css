@@ -570,6 +570,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
+    margin-bottom: 20px;
 }
 
     .user-btn:hover {
@@ -833,7 +834,7 @@ body {
         color: #2B2B2B;
         font-weight: 500;
         padding: 0.4rem 0.6rem;
-        border-radius: 5px;
+        border-radius: 4px;
         transition: background-color 0.2s ease;
     }
 
@@ -846,3 +847,23 @@ body {
             color: #8B5E34;
             font-weight: 600;
         }
+
+.user-notification {
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+    z-index: 1000;
+}
+
+    .user-notification.success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .user-notification.error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+

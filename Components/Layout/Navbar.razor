@@ -1,12 +1,13 @@
 ﻿@using CRUDManagmentWeb.Services.Auth
 @using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 
 <nav class="main-navbar">
     <ul class="main-navbar-list">
-        <li><a href="/">Inicio</a></li>
+        <li><a @onclick="IrInicio">Inicio</a></li>
 
         @if (isAuthenticated)
         {
@@ -21,11 +22,42 @@
 
 @code {
     private bool isAuthenticated;
+    private string? userRole;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+        var user = authState.User;
+
+        isAuthenticated = user.Identity?.IsAuthenticated ?? false;
+        userRole = user.FindFirst(ClaimTypes.Role)?.Value;
+    }
+
+    private void IrInicio()
+    {
+        if (!isAuthenticated || string.IsNullOrWhiteSpace(userRole))
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+        switch (userRole.ToLower())
+        {
+            case "admin":
+                Navigation.NavigateTo("/admin");
+                break;
+            case "employee":
+                Navigation.NavigateTo("/employee");
+                break;
+            case "company":
+                Navigation.NavigateTo("/company");
+                break;
+            case "user":
+                Navigation.NavigateTo("/homeuser");
+                break;
+            default:
+                Navigation.NavigateTo("/");
+                break;
+        }
     }
 
     private async Task Logout()

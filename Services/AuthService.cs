@@ -31,7 +31,7 @@ namespace CRUDManagmentWeb.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                await _jsRuntime.InvokeVoidAsync("alert", $"Error del servidor: {response.StatusCode}\n{content}");
+                //await _jsRuntime.InvokeVoidAsync("alert", $"Error del servidor: {response.StatusCode}\n{content}");
                 return null;
             }
 
@@ -49,11 +49,11 @@ namespace CRUDManagmentWeb.Services
             var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/register", request);
 
             var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"🔍 Backend dice: {response.StatusCode} - {content}");
+            Console.WriteLine($"Backend dice: {response.StatusCode} - {content}");
 
             if (!response.IsSuccessStatusCode)
             {
-                await _jsRuntime.InvokeVoidAsync("alert", $"Error del servidor: {content}");
+                //await _jsRuntime.InvokeVoidAsync("alert", $"Error del servidor: {content}");
                 return false;
             }
 

@@ -7,6 +7,7 @@
 @using CRUDManagmentWeb.Components.Pages.Auth
 @using Microsoft.AspNetCore.Authorization
 @rendermode InteractiveServer
+@using CRUDManagmentWeb.Components.Shared
 @attribute [Authorize(Roles = "Company")]
 
     <div class="user-container">
@@ -96,11 +97,17 @@
                             <button type="button" class="user-btn cancel" @onclick="CancelEdit">Cancelar</button>
                         }
                     </div>
+                @if (!string.IsNullOrEmpty(notificationMessage))
+                {
+                    <div class="user-notification @notificationType">
+                        @notificationMessage
+                    </div>
+                }
                 </EditForm>
             </div>
 
             <div class="user-table">
-                <h3>📋 Empleados Registrados</h3>
+                <h3>Empleados Registrados</h3>
 
                 @if (employees == null)
                 {
@@ -163,7 +170,7 @@
                 await LoadCompanyId();
                 if (companyId == 0)
                 {
-                    await JS.InvokeVoidAsync("alert", "No se encontró empresa asociada al usuario");
+                    ShowNotification("No se encontró empresa asociada al usuario", "error");
                     return;
                 }
 
@@ -213,13 +220,14 @@
 
                 if (success)
                 {
-                    await JS.InvokeVoidAsync("alert", "Empleado actualizado");
+                    ShowNotification("Empleado actualizado", "success");
                     CancelEdit();
                     await LoadEmployees();
                 }
                 else
                 {
-                    await JS.InvokeVoidAsync("alert", "Error al actualizar el empleado");
+                    ShowNotification("Error al actualizar el empleado", "error");
+                  
                 }
             }
             else
@@ -235,13 +243,13 @@
 
                 if (success)
                 {
-                    await JS.InvokeVoidAsync("alert", "Empleado creado correctamente");
+                    ShowNotification("Empleado creado correctamente", "success");
                     employeeForm = new();
                     await LoadEmployees();
                 }
                 else
                 {
-                    await JS.InvokeVoidAsync("alert", "Error al crear el empleado");
+                    ShowNotification("Error al crear el empleado", "error");
                 }
             }
         }
@@ -282,9 +290,26 @@
             var success = await EmployeeService.DeleteAsync(id);
             if (success)
             {
-                await JS.InvokeVoidAsync("alert", "Empleado eliminado");
+                ShowNotification("Usuario eliminado correctamente", "success");
                 await LoadEmployees();
             }
         }
+    }
+    private string notificationMessage = "";
+    private string notificationType = ""; // success, error
+
+    private void ShowNotification(string message, string type)
+    {
+        notificationMessage = message;
+        notificationType = type;
+
+        // Ocultar después de 3 segundos
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            notificationMessage = "";
+            notificationType = "";
+            InvokeAsync(StateHasChanged);
+        });
     }
 }

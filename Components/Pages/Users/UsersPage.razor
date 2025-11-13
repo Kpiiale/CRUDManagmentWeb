@@ -8,10 +8,12 @@
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")] 
 
+
+
 <div class="user-container">
         <div class="user-card">
             <div class="user-header">
-                <h2>👤 Gestión de Usuarios</h2>
+                <h2>Gestión de Usuarios</h2>
             </div>
             <div class="user-form">
                 <h3>@(isEditMode ? "Editar Usuario" : "Agregar Usuario")</h3>
@@ -61,7 +63,7 @@
                             </div>
                         </div>
                     </div>
-
+               
                     <div class="user-actions">
                         <button class="user-btn" type="submit">
                             <span class="btn-text">@(isEditMode ? "Actualizar" : "Crear")</span>
@@ -77,6 +79,12 @@
                             <button type="button" class="user-btn cancel" @onclick="CancelEdit">Cancelar</button>
                         }
                     </div>
+                @if (!string.IsNullOrEmpty(notificationMessage))
+                {
+                    <div class="user-notification @notificationType">
+                        @notificationMessage
+                    </div>
+                }
                 </EditForm>
             </div>
             <div class="user-table">
@@ -184,13 +192,14 @@
 
         if (success)
         {
-            await JS.InvokeVoidAsync("alert", "Usuario guardado correctamente");
+            ShowNotification("Usuario guardado correctamente", "success");
             await LoadUsers();
             CancelEdit();
         }
         else
         {
-            await JS.InvokeVoidAsync("alert", "Error al guardar el usuario");
+            ShowNotification("No se pudo eliminar el usuario", "error");
+
         }
     }
 
@@ -224,13 +233,31 @@
             var success = await UserService.DeleteAsync(id);
             if (success)
             {
-                await JS.InvokeVoidAsync("alert", "Usuario eliminado correctamente");
+                ShowNotification("Usuario eliminado correctamente", "success");
                 await LoadUsers();
             }
             else
             {
-                await JS.InvokeVoidAsync("alert", "No se pudo eliminar el usuario");
+                ShowNotification("No se pudo eliminar el usuario", "error");
             }
         }
+    }
+
+    private string notificationMessage = "";
+    private string notificationType = ""; // success, error
+
+    private void ShowNotification(string message, string type)
+    {
+        notificationMessage = message;
+        notificationType = type;
+
+        // Ocultar después de 3 segundos
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            notificationMessage = "";
+            notificationType = "";
+            InvokeAsync(StateHasChanged);
+        });
     }
 }
