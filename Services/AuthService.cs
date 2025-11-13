@@ -21,7 +21,7 @@ namespace CRUDManagmentWeb.Services
             _jsRuntime = jsRuntime;
             _authenticationStateProvider = authenticationStateProvider; 
         }
-        private const string BaseUrl = "https://localhost:7162/api/Auth"; // cambia si el puerto es diferente
+        private const string BaseUrl = "https://beeapp-api-afefhphxaaf0hsfn.chilecentral-01.azurewebsites.net/api/Auth";
         public async Task<AuthResponse?> LoginAsync(LoginRequest request)
         {
             var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/login", request);

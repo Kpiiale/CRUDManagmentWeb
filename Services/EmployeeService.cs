@@ -7,7 +7,7 @@ namespace CRUDManagmentWeb.Services
 {
     public class EmployeeService : ApiServiceBase
     {
-        private const string BaseUrl = "https://localhost:7162/api/Employees";
+        private const string BaseUrl = "https://beeapp-api-afefhphxaaf0hsfn.chilecentral-01.azurewebsites.net/api/Employees";
 
         public EmployeeService(HttpClient httpClient, IJSRuntime jsRuntime)
             : base(httpClient, jsRuntime) { }
