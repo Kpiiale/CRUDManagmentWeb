@@ -1,0 +1,44 @@
+﻿@using CRUDManagmentWeb.Services.Auth
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<nav class="main-navbar">
+    <ul class="main-navbar-list">
+        <li><a href="/">Inicio</a></li>
+
+        @if (isAuthenticated)
+        {
+            <li><a @onclick="Logout">Cerrar sesión</a></li>
+        }
+        else
+        {
+            <li><a href="/login">Iniciar sesión</a></li>
+        }
+    </ul>
+</nav>
+
+@code {
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+    }
+
+    private async Task Logout()
+    {
+        await JS.InvokeVoidAsync("localStorage.removeItem", "authToken");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "username");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "role");
+
+        if (AuthStateProvider is CustomAuthStateProvider customProvider)
+        {
+            customProvider.NotifyUserLogout();
+        }
+
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
+}

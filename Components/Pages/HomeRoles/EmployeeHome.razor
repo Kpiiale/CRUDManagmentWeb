@@ -4,7 +4,6 @@
 @using Microsoft.AspNetCore.Authorization
 @inject NavigationManager NavManager
 @rendermode InteractiveServer
-@attribute [Authorize(Roles = "Employee")]
 
 <div class="main-page">
         <div class="main-card">
@@ -26,7 +25,7 @@
 @code {
     private void GoActivities()
     {
-        NavManager.NavigateTo("/company/activities");
+        NavManager.NavigateTo("/employee/activities");
     }
     
 }
