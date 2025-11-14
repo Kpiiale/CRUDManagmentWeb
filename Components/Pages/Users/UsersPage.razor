@@ -49,12 +49,18 @@
                             </div>
                         </div>
 
+                    @if (!isEditMode)
+                    {
                         <div class="user-group">
                             <label class="user-label">Contraseña</label>
                             <div class="user-input-wrapper">
-                                <InputText @bind-Value="userForm.Password" type="password" placeholder="Contraseña" />
+                                <InputText @bind-Value="userForm.Password"
+                                           type="password"
+                                           placeholder="Contraseña" />
                             </div>
                         </div>
+                    }
+
                         <div class="user-group">
                             <label class="user-label">Estado</label>
                             <div class="checkbox-wrapper">
