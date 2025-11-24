@@ -66,6 +66,12 @@ namespace CRUDManagmentWeb.Services
             var req = new { CategoryId = categoryId };
             await _httpClient.PostAsJsonAsync($"{BaseUrl}/{activityId}/categories", req);
         }
+        public async Task<List<ActivityDto>> GetAllForUserAsync()
+        {
+            await SetAuthHeaderAsync();
+            var response = await _httpClient.GetFromJsonAsync<List<ActivityDto>>($"{BaseUrl}/all");
+            return response ?? new List<ActivityDto>();
+        }
 
     }
 }
