@@ -59,27 +59,7 @@
                             </div>
                         }
 
-                        @if (isEditMode)
-                        {
-                            <div class="user-group">
-                                <label class="user-label">Cambiar contraseña</label>
-                                <div class="checkbox-wrapper">
-                                    <InputCheckbox @bind-Value="changePassword" />
-                                    <label class="checkbox-label">Actualizar contraseña</label>
-                                </div>
-                            </div>
-
-                            @if (changePassword)
-                            {
-                                <div class="user-group">
-                                    <label class="user-label">Nueva contraseña</label>
-                                    <div class="user-input-wrapper">
-                                        <InputText type="password" @bind-Value="employeeForm.Password" placeholder="Nueva contraseña" />
-                                    </div>
-                                    <ValidationMessage For="@(() => employeeForm.Password)" />
-                                </div>
-                            }
-                        }
+                        
                     </div>
 
                     <div class="user-actions">
