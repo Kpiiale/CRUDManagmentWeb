@@ -7,7 +7,7 @@ namespace CRUDManagmentWeb.Services
 {
     public class UserService : ApiServiceBase
     {
-        private const string BaseUrl = "https://beeapp-api-afefhphxaaf0hsfn.chilecentral-01.azurewebsites.net/api/Users";
+        private const string BaseUrl = "https://localhost:7162/api/Users";
 
         public UserService(HttpClient httpClient, IJSRuntime jsRuntime)
             : base(httpClient, jsRuntime) { }

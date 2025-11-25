@@ -1,11 +1,56 @@
 ﻿@page "/homeuser"
-@using CRUDManagmentWeb.Components.Shared
+@using CRUDManagmentWeb.Models.Activity
+@using CRUDManagmentWeb.Services
 @using Microsoft.AspNetCore.Authorization
+@inject ActivityService ActivityService
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "User")]
+<h3>Actividades</h3>
 
-<h3>UserHome</h3> 
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="error-message show">@errorMessage</div>
+}
+else if (activities == null)
+{
+    <p>Cargando actividades...</p>
+}
+else if (!activities.Any())
+{
+    <p>No hay actividades registradas.</p>
+}
+else
+{
+    <div class="activities-container">
+        @foreach (var a in activities)
+        {
+            <div class="activity-card">
+                <h4>@a.Title</h4>
+                <p>@a.Description</p>
 
-
+                <div class="activity-actions">
+                    <button class="btn btn-primary">Acción 1</button>
+                    <button class="btn btn-secondary">Acción 2</button>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 @code {
+    private List<ActivityDto>? activities;
+    private string? errorMessage;
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Aquí se asegura que el token se adjunte
+            activities = await ActivityService.GetAllForUserAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar actividades: {ex.Message}";
+        }
+    }
 }

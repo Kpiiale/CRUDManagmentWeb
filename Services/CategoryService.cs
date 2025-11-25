@@ -6,7 +6,7 @@ namespace CRUDManagmentWeb.Services
 {
     public class CategoryService : ApiServiceBase
     {
-        private const string BaseUrl = "https://beeapp-api-afefhphxaaf0hsfn.chilecentral-01.azurewebsites.net/api/Categories";
+        private const string BaseUrl = "https://localhost:7162/api/Categories";
 
         public CategoryService(HttpClient httpClient, IJSRuntime jsRuntime)
             : base(httpClient, jsRuntime) { }
