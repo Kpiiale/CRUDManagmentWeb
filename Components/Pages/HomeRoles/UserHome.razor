@@ -1,17 +1,13 @@
 ﻿@page "/homeuser"
 @using CRUDManagmentWeb.Models.Activity
+@using CRUDManagmentWeb.Models.Reservation
 @using CRUDManagmentWeb.Services
-@using Microsoft.AspNetCore.Authorization
 @inject ActivityService ActivityService
+@inject ReservationService ReservationService
 @rendermode InteractiveServer
-@attribute [Authorize(Roles = "User")]
-<h3>Actividades</h3>
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="error-message show">@errorMessage</div>
-}
-else if (activities == null)
+
+@if (activities == null)
 {
     <p>Cargando actividades...</p>
 }
@@ -25,32 +21,125 @@ else
         @foreach (var a in activities)
         {
             <div class="activity-card">
-                <h4>@a.Title</h4>
-                <p>@a.Description</p>
+                <div class="activity-info">
+                    <h4>@a.Title</h4>
+                    <p class="truncate">@a.Description</p>
+                </div>
 
                 <div class="activity-actions">
-                    <button class="btn btn-primary">Acción 1</button>
-                    <button class="btn btn-secondary">Acción 2</button>
+                    <button class="btn info-btn" @onclick="() => ShowDetails(a)">Más información</button>
+                    <button class="btn reserve-btn" @onclick="() => ShowReservation(a)">Reservar</button>
                 </div>
             </div>
         }
     </div>
 }
 
+@if (selectedActivity != null)
+{
+    <div class="modal-overlay" @onclick="CloseDetails">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <h2>@selectedActivity.Title</h2>
+            <p><strong>Descripción:</strong> @selectedActivity.Description</p>
+            <p><strong>Precio:</strong> @($"{selectedActivity.Price} {selectedActivity.Currency}")</p>
+            <p><strong>Ubicación:</strong> @selectedActivity.LocationText</p>
+            <p><strong>Inicio:</strong> @(selectedActivity.StartAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</p>
+            <p><strong>Fin:</strong> @(selectedActivity.EndAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</p>
+            <button class="btn btn-close" @onclick="CloseDetails">Cerrar</button>
+        </div>
+    </div>
+}
+
+@if (reservationActivity != null)
+{
+    <div class="modal-overlay" @onclick="CloseReservation">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <h2>Reservar: @reservationActivity.Title</h2>
+            <p>@reservationActivity.Description</p>
+            <p><strong>Capacidad:</strong> @reservationActivity.Capacity</p>
+            <p><strong>Precio:</strong> @($"{reservationActivity.Price} {reservationActivity.Currency}")</p>
+
+            <label>Cantidad de cupos:</label>
+            <input type="number" min="1" max="@reservationActivity.Capacity"
+                   @bind="quantity" class="form-control" />
+
+            @if (reservationActivity.Price > 0 && quantity > 0)
+            {
+                <p><strong>Total:</strong> @(reservationActivity.Price* quantity) @reservationActivity.Currency</p>
+                <button class="btn btn-success" @onclick="SimulatePayment">Pagar</button>
+            }
+
+            @if (reservationActivity.Price == 0 || paymentCompleted)
+            {
+                <button class="btn btn-primary" @onclick="ConfirmReservation">Confirmar reserva</button>
+            }
+
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <p class="alert">@message</p>
+            }
+
+            <button class="btn btn-close" @onclick="CloseReservation">Cerrar</button>
+        </div>
+    </div>
+}
+
 @code {
     private List<ActivityDto>? activities;
-    private string? errorMessage;
+    private ActivityDto? selectedActivity;
+    private ActivityDto? reservationActivity;
+    private int quantity = 0;
+    private bool paymentCompleted = false;
+    private string? message;
 
     protected override async Task OnInitializedAsync()
     {
-        try
+        activities = await ActivityService.GetAllForUserAsync();
+    }
+
+    private void ShowDetails(ActivityDto activity) => selectedActivity = activity;
+    private void CloseDetails() => selectedActivity = null;
+
+    private void ShowReservation(ActivityDto activity)
+    {
+        reservationActivity = activity;
+        quantity = 0;
+        paymentCompleted = false;
+        message = null;
+    }
+
+    private void CloseReservation()
+    {
+        reservationActivity = null;
+        quantity = 0;
+        paymentCompleted = false;
+        message = null;
+    }
+
+    private void SimulatePayment()
+    {
+        paymentCompleted = true;
+        message = "Pago simulado correctamente.";
+    }
+
+    private async Task ConfirmReservation()
+    {
+        if (reservationActivity == null || quantity <= 0 || quantity > reservationActivity.Capacity)
         {
-            // Aquí se asegura que el token se adjunte
-            activities = await ActivityService.GetAllForUserAsync();
+            message = "Cantidad inválida.";
+            return;
         }
-        catch (Exception ex)
+
+        var request = new CreateReservationRequest(reservationActivity.Id, quantity);
+        var result = await ReservationService.CreateAsync(request);
+
+        if (result != null)
         {
-            errorMessage = $"Error al cargar actividades: {ex.Message}";
+            message = $"Reserva confirmada. Total: {result.TotalAmount} {reservationActivity.Currency}";
+        }
+        else
+        {
+            message = "Error al realizar la reserva.";
         }
     }
 }

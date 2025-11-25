@@ -1,0 +1,89 @@
+﻿@page "/user/reservation/{activityId:int}"
+@using CRUDManagmentWeb.Models.Activity
+@using CRUDManagmentWeb.Models.Reservation
+@using CRUDManagmentWeb.Services
+@inject ActivityService ActivityService
+@inject ReservationService ReservationService
+@rendermode InteractiveServer
+
+@if (activity == null)
+{
+    <p>No se encontró la actividad.</p>
+}
+else
+{
+    <div class="reservation-form">
+        <h4>@activity.Title</h4>
+        <p>@activity.Description</p>
+        <p><strong>Capacidad disponible:</strong> @activity.Capacity</p>
+        <p><strong>Precio por cupo:</strong> @($"{activity.Price} {activity.Currency}")</p>
+
+        <label for="quantity">Cantidad de cupos:</label>
+        <input type="number" id="quantity" min="1" max="@activity.Capacity"
+               @bind="quantity" class="form-control" />
+
+        @if (activity.Price > 0 && quantity > 0)
+        {
+            <p><strong>Total a pagar:</strong> @(activity.Price* quantity) @activity.Currency</p>
+            <button class="btn btn-success" @onclick="SimulatePayment">Pagar</button>
+        }
+
+        @if (activity.Price == 0 || paymentCompleted)
+        {
+            <button class="btn btn-primary" @onclick="ConfirmReservation">Confirmar reserva</button>
+        }
+
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <p class="alert">@message</p>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public int activityId { get; set; }
+    private ActivityDto? activity;
+    private int quantity = 0;
+    private bool paymentCompleted = false;
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var allActivities = await ActivityService.GetAllForUserAsync();
+            activity = allActivities.FirstOrDefault(a => a.Id == activityId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error cargando actividad: {ex.Message}");
+        }
+    }
+
+    private void SimulatePayment()
+    {
+        paymentCompleted = true;
+        message = "Pago simulado correctamente.";
+    }
+
+    private async Task ConfirmReservation()
+    {
+        if (activity == null || quantity <= 0 || quantity > activity.Capacity)
+        {
+            message = "Cantidad inválida.";
+            return;
+        }
+
+        var request = new CreateReservationRequest(activity.Id, quantity);
+        var result = await ReservationService.CreateAsync(request);
+
+        if (result != null)
+        {
+            message = $"Reserva confirmada. Total: {result.TotalAmount} {activity.Currency}";
+        }
+        else
+        {
+            message = "Error al realizar la reserva.";
+        }
+    }
+}

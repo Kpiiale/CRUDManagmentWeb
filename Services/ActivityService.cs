@@ -69,7 +69,7 @@ namespace CRUDManagmentWeb.Services
         public async Task<List<ActivityDto>> GetAllForUserAsync()
         {
             await SetAuthHeaderAsync();
-            var response = await _httpClient.GetFromJsonAsync<List<ActivityDto>>($"{BaseUrl}/all");
+            var response = await _httpClient.GetFromJsonAsync<List<ActivityDto>>($"{BaseUrl}/all-global");
             return response ?? new List<ActivityDto>();
         }
 
