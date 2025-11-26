@@ -32,7 +32,7 @@ namespace CRUDManagmentWeb.Services
             await SetAuthHeaderAsync();
 
             var response = await _httpClient.GetFromJsonAsync<PagedReservationResponse>(
-                $"{BaseUrl}?page={page}&pageSize={pageSize}"
+                $"{BaseUrl}/all?page={page}&pageSize={pageSize}"
             );
 
             return response?.Items.ToList() ?? new List<ReservationResponse>();
