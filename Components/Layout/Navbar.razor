@@ -11,6 +11,11 @@
 
         @if (isAuthenticated)
         {
+            @if (userRole?.ToLower() == "user")
+            {
+                <li><a href="/user/reservation">Tus reservas</a></li>
+            }
+
             <li><a @onclick="Logout">Cerrar sesión</a></li>
         }
         else
@@ -40,6 +45,7 @@
             Navigation.NavigateTo("/");
             return;
         }
+
         switch (userRole.ToLower())
         {
             case "admin":

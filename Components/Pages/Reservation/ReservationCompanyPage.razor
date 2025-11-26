@@ -1,16 +1,17 @@
-﻿@page "/user/reservation"
+﻿@page "/company/reservation"
 @using CRUDManagmentWeb.Models.Reservation
 @using CRUDManagmentWeb.Services
 @inject ReservationService ReservationService
 @inject AuthService AuthService
 @inject PaymentService PaymentService
+@inject CompanyService CompanyService
+@inject IJSRuntime JS
 @inject NavigationManager Navigation
-
 
 <div class="user-container">
     <div class="user-card">
         <div class="user-header">
-            <h2>Tus reservas</h2>
+            <h2>Reservas de la Empresa</h2>
         </div>
 
         <div class="user-table">
@@ -20,7 +21,7 @@
             }
             else if (!reservations.Any())
             {
-                <p>No tienes reservas registradas.</p>
+                <p>No hay reservas registradas para esta empresa.</p>
             }
             else
             {
@@ -34,7 +35,6 @@
                             <th>Estado</th>
                             <th>Reservado en</th>
                             <th>Expira en</th>
-                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,11 +52,6 @@
                                 </td>
                                 <td>@r.ReservedAt.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td>@(r.ExpiresAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
-                                <td>
-                                    <button class="user-btn small pay" @onclick="() => IniciarPago(r.Id)">
-                                        💳 Pagar
-                                    </button>
-                                </td>
                             </tr>
                         }
                     </tbody>
@@ -64,54 +59,59 @@
             }
         </div>
 
-        @if (!string.IsNullOrEmpty(message))
+        @if (!string.IsNullOrEmpty(notificationMessage))
         {
-            <div class="user-notification">
-                @message
+            <div class="user-notification @notificationType">
+                @notificationMessage
             </div>
         }
     </div>
 </div>
+
 @code {
-    private List<ReservationResponse>? reservations;
-    private string? message;
+    private List<ReservationResponse> reservations = new();
+    private int companyId;
+    private string? notificationMessage;
+    private string? notificationType;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var currentUser = await AuthService.GetCurrentUserAsync();
-            if (currentUser is null)
+            var userId = await GetCurrentUserId();
+            var companies = await CompanyService.GetAllAsync();
+            var myCompany = companies.FirstOrDefault(c => c.OwnerUserId == userId);
+            companyId = myCompany?.Id ?? 0;
+
+            if (companyId == 0)
             {
-                message = "No se pudo obtener el usuario actual.";
+                ShowNotification("No se encontró empresa asociada al usuario", "error");
                 return;
             }
 
-            reservations = await ReservationService.GetByUserAsync(currentUser.Id);
+            await LoadReservations();
         }
         catch (Exception ex)
         {
-            message = $"Error al cargar reservas: {ex.Message}";
+            ShowNotification($"Error al cargar reservas: {ex.Message}", "error");
         }
     }
 
-    private async Task IniciarPago(long reservationId)
+    private async Task<int> GetCurrentUserId()
     {
-        try
-        {
-            var url = await PaymentService.CreateCheckoutSessionAsync(reservationId);
-            if (!string.IsNullOrEmpty(url))
-            {
-                Navigation.NavigateTo(url, forceLoad: true); // redirige a Stripe Checkout
-            }
-            else
-            {
-                message = "No se pudo iniciar el pago.";
-            }
-        }
-        catch (Exception ex)
-        {
-            message = $"Error al iniciar pago: {ex.Message}";
-        }
+        var user = await JS.InvokeAsync<string>("localStorage.getItem", "userId");
+        return int.TryParse(user, out var id) ? id : 0;
+    }
+
+    private async Task LoadReservations()
+    {
+        reservations = await ReservationService.GetByCompanyAsync(companyId, page: 1, pageSize: 20);
+        StateHasChanged();
+    }
+
+    private void ShowNotification(string message, string type)
+    {
+        notificationMessage = message;
+        notificationType = type;
     }
 }

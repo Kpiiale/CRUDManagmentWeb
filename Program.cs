@@ -29,7 +29,7 @@ builder.Services.AddScoped<ActivityService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ActivityCategoryService>();
 builder.Services.AddScoped<ReservationService>();
-
+builder.Services.AddScoped<PaymentService>();
 
 
 

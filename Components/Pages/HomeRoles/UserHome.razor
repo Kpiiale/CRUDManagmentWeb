@@ -63,13 +63,7 @@ else
             <input type="number" min="1" max="@reservationActivity.Capacity"
                    @bind="quantity" class="form-control" />
 
-            @if (reservationActivity.Price > 0 && quantity > 0)
-            {
-                <p><strong>Total:</strong> @(reservationActivity.Price* quantity) @reservationActivity.Currency</p>
-                <button class="btn btn-success" @onclick="SimulatePayment">Pagar</button>
-            }
-
-            @if (reservationActivity.Price == 0 || paymentCompleted)
+            @if (quantity > 0)
             {
                 <button class="btn btn-primary" @onclick="ConfirmReservation">Confirmar reserva</button>
             }
@@ -89,7 +83,6 @@ else
     private ActivityDto? selectedActivity;
     private ActivityDto? reservationActivity;
     private int quantity = 0;
-    private bool paymentCompleted = false;
     private string? message;
 
     protected override async Task OnInitializedAsync()
@@ -104,7 +97,6 @@ else
     {
         reservationActivity = activity;
         quantity = 0;
-        paymentCompleted = false;
         message = null;
     }
 
@@ -112,15 +104,10 @@ else
     {
         reservationActivity = null;
         quantity = 0;
-        paymentCompleted = false;
         message = null;
     }
 
-    private void SimulatePayment()
-    {
-        paymentCompleted = true;
-        message = "Pago simulado correctamente.";
-    }
+ 
 
     private async Task ConfirmReservation()
     {

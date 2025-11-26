@@ -1,11 +1,10 @@
-﻿@page "/user/reservation"
+﻿@page "/admin/reservation"
 @using CRUDManagmentWeb.Models.Reservation
 @using CRUDManagmentWeb.Services
 @inject ReservationService ReservationService
 @inject AuthService AuthService
 @inject PaymentService PaymentService
 @inject NavigationManager Navigation
-
 
 <div class="user-container">
     <div class="user-card">
@@ -34,7 +33,6 @@
                             <th>Estado</th>
                             <th>Reservado en</th>
                             <th>Expira en</th>
-                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,11 +50,6 @@
                                 </td>
                                 <td>@r.ReservedAt.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td>@(r.ExpiresAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
-                                <td>
-                                    <button class="user-btn small pay" @onclick="() => IniciarPago(r.Id)">
-                                        💳 Pagar
-                                    </button>
-                                </td>
                             </tr>
                         }
                     </tbody>
@@ -72,6 +65,7 @@
         }
     </div>
 </div>
+
 @code {
     private List<ReservationResponse>? reservations;
     private string? message;
@@ -80,38 +74,11 @@
     {
         try
         {
-            var currentUser = await AuthService.GetCurrentUserAsync();
-            if (currentUser is null)
-            {
-                message = "No se pudo obtener el usuario actual.";
-                return;
-            }
-
-            reservations = await ReservationService.GetByUserAsync(currentUser.Id);
+            reservations = await ReservationService.GetAllReservationsAsync(page: 1, pageSize: 20);
         }
         catch (Exception ex)
         {
             message = $"Error al cargar reservas: {ex.Message}";
-        }
-    }
-
-    private async Task IniciarPago(long reservationId)
-    {
-        try
-        {
-            var url = await PaymentService.CreateCheckoutSessionAsync(reservationId);
-            if (!string.IsNullOrEmpty(url))
-            {
-                Navigation.NavigateTo(url, forceLoad: true); // redirige a Stripe Checkout
-            }
-            else
-            {
-                message = "No se pudo iniciar el pago.";
-            }
-        }
-        catch (Exception ex)
-        {
-            message = $"Error al iniciar pago: {ex.Message}";
         }
     }
 }

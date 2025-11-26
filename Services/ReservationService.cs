@@ -27,31 +27,35 @@ namespace CRUDManagmentWeb.Services
             return await response.Content.ReadFromJsonAsync<ReservationDto>();
         }
 
-        public async Task<List<ReservationDto>> GetMyReservationsAsync(int page = 1, int pageSize = 20)
+        public async Task<List<ReservationResponse>> GetAllReservationsAsync(int page = 1, int pageSize = 20)
         {
             await SetAuthHeaderAsync();
+
             var response = await _httpClient.GetFromJsonAsync<PagedReservationResponse>(
-                $"{BaseUrl}/my?page={page}&pageSize={pageSize}"
+                $"{BaseUrl}?page={page}&pageSize={pageSize}"
             );
-            return response?.Items ?? new List<ReservationDto>();
+
+            return response?.Items.ToList() ?? new List<ReservationResponse>();
         }
 
-        public async Task<List<ReservationDto>> GetByUserAsync(int userId, int page = 1, int pageSize = 20)
+        public async Task<List<ReservationResponse>> GetByUserAsync(int userId, int page = 1, int pageSize = 20)
         {
             await SetAuthHeaderAsync();
             var response = await _httpClient.GetFromJsonAsync<PagedReservationResponse>(
-                $"{BaseUrl}/user/{userId}?page={page}&pageSize={pageSize}"
+                $"{BaseUrl}/by-user/{userId}?page={page}&pageSize={pageSize}"
             );
-            return response?.Items ?? new List<ReservationDto>();
+            return response?.Items.ToList() ?? new List<ReservationResponse>();
         }
 
-        public async Task<List<ReservationDto>> GetByCompanyAsync(int companyId, int page = 1, int pageSize = 20)
+        public async Task<List<ReservationResponse>> GetByCompanyAsync(int companyId, int page = 1, int pageSize = 20)
         {
             await SetAuthHeaderAsync();
+
             var response = await _httpClient.GetFromJsonAsync<PagedReservationResponse>(
-                $"{BaseUrl}/company/{companyId}?page={page}&pageSize={pageSize}"
+                $"{BaseUrl}/by-company/{companyId}?page={page}&pageSize={pageSize}"
             );
-            return response?.Items ?? new List<ReservationDto>();
+
+            return response?.Items.ToList() ?? new List<ReservationResponse>();
         }
     }
 }
