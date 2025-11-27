@@ -4,65 +4,79 @@
 @inject CRUDManagmentWeb.Services.AuthService AuthService
 @inject NavigationManager NavigationManager
 
-<div class="register-container">
-    <div class="register-card">
-        <div class="register-header">
-            <h2>Registro de Usuario</h2>
-            <p>Crea tu cuenta</p>
+<!-- 1. Usamos el wrapper para el fondo café-amarillo y el espacio del navbar -->
+<div class="login-page-wrapper">
+
+    <!-- 2. Reutilizamos login-container para el ancho -->
+    <div class="login-container">
+
+        <!-- 3. login-card nos da el borde negro grueso y la sombra dura -->
+        <div class="login-card">
+
+            <div class="login-header">
+                <h2>Registro de Usuario</h2>
+                <p>Únete a la colmena</p>
+            </div>
+
+            <EditForm Model="@registerInput" OnValidSubmit="@HandleRegister">
+                <DataAnnotationsValidator />
+                <!-- ValidationSummary a veces ensucia el diseño, lo dejo comentado por si prefieres los mensajes individuales -->
+                <!-- <ValidationSummary /> -->
+                <!-- Reutilizamos form-group y form-label -->
+                <div class="form-group">
+                    <label class="form-label">Nombre de usuario</label>
+                    <div class="input-wrapper">
+                        <InputText @bind-Value="registerInput.Username" placeholder="Elige tu nombre de usuario" />
+                    </div>
+                    <ValidationMessage For="@(() => registerInput.Username)" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <div class="input-wrapper">
+                        <InputText @bind-Value="registerInput.Email" type="email" placeholder="ejemplo@beeweb.com" />
+                    </div>
+                    <ValidationMessage For="@(() => registerInput.Email)" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <div class="input-wrapper">
+                        <InputText @bind-Value="registerInput.Password" type="password" placeholder="Crea una contraseña segura" />
+                    </div>
+                    <ValidationMessage For="@(() => registerInput.Password)" />
+                </div>
+
+                <!-- Usamos login1-btn para tener el botón naranja idéntico -->
+                <button type="submit" class="login1-btn">
+                    <span class="btn-text">Registrar</span>
+                    <span class="btn-loader">
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                    </span>
+                </button>
+            </EditForm>
+
+            <!-- Footer con estilo coherente -->
+            <div class="login-footer">
+                <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión</a></p>
+            </div>
+
+            <!-- ALERTAS (Adaptadas al estilo visual) -->
+            @if (!string.IsNullOrEmpty(SuccessMessage))
+            {
+                <div class="alert-success-brutal">
+                    <h3>¡Éxito!</h3>
+                    <p>@SuccessMessage</p>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="alert-error-brutal">@ErrorMessage</div>
+            }
         </div>
-
-        <EditForm Model="@registerInput" OnValidSubmit="@HandleRegister">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <div class="register-group">
-                <label class="register-label">Nombre de usuario</label>
-                <div class="register-input-wrapper">
-                    <InputText @bind-Value="registerInput.Username" placeholder="Ingresa tu nombre de usuario" />
-                </div>
-            </div>
-
-            <div class="register-group">
-                <label class="register-label">Email</label>
-                <div class="register-input-wrapper">
-                    <InputText @bind-Value="registerInput.Email" type="email" placeholder="Ingresa tu correo" />
-                </div>
-            </div>
-
-            <div class="register-group">
-                <label class="register-label">Contraseña</label>
-                <div class="register-input-wrapper">
-                    <InputText @bind-Value="registerInput.Password" type="password" placeholder="Crea una contraseña" />
-                </div>
-            </div>
-
-            <button type="submit" class="register-btn">
-                <span class="btn-text">Registrar</span>
-                <span class="btn-loader">
-                    <span class="loader-bar"></span>
-                    <span class="loader-bar"></span>
-                    <span class="loader-bar"></span>
-                </span>
-            </button>
-        </EditForm>
-
-        <div class="signup-link">
-            <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión</a></p>
-        </div>
-
-        @if (!string.IsNullOrEmpty(SuccessMessage))
-        {
-            <div class="success-message show">
-                <div class="success-icon">✓</div>
-                <h3>¡Registro exitoso!</h3>
-                <p>@SuccessMessage</p>
-            </div>
-        }
-
-        @if (!string.IsNullOrEmpty(ErrorMessage))
-        {
-            <div class="error-message show">@ErrorMessage</div>
-        }
     </div>
 </div>
 
