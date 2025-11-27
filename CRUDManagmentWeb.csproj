@@ -7,10 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Components\Pages\Auth\LoginForm.razor.css" />
+    <None Remove="Components\Pages\Auth\RegisterForm.razor.css" />
     <None Remove="Components\Pages\Home.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Components\Pages\Auth\LoginForm.razor.css" />
+    <Content Include="Components\Pages\Auth\RegisterForm.razor.css" />
     <Content Include="Components\Pages\Home.razor.css" />
   </ItemGroup>
 

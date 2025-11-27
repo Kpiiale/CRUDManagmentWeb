@@ -1,0 +1,213 @@
+﻿/* --- CONTENEDOR PRINCIPAL (Forzado a Pantalla Completa y Centrado) --- */
+.login-container {
+    position: fixed; /* Ignora el layout de la app para centrarse bien */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Centrado perfecto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* --- TARJETA --- */
+.login-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 450px; 
+    padding: 50px 40px; 
+    border: 5px solid rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* --- CABECERA --- */
+.login-header {
+    margin-bottom: 35px;
+}
+
+    .login-header h2 {
+        color: #8A4B08; /* Marrón oscuro */
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .login-header p {
+        color: #666;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+/* --- FORMULARIO --- */
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #333; /* Texto negro suave */
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+/* --- CORRECCIÓN DEFINITIVA DE INPUTS --- */
+
+.input-wrapper {
+    position: relative;
+    background: #FAFAFA;
+    /* Este es el ÚNICO borde que queremos (el de afuera redondeado) */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    overflow: hidden; /* Esto recorta cualquier esquina cuadrada interna */
+    transition: all 0.3s ease;
+}
+
+    /* Selector potente: Afecta al Input, al form-control y a las clases de validación de Blazor */
+    .input-wrapper input,
+    .input-wrapper ::deep input,
+    .input-wrapper .form-control,
+    .input-wrapper .modified,
+    .input-wrapper .valid,
+    .input-wrapper .invalid {
+        /* ANULAMOS TODO BORDE EXTERNO O INTERNO */
+        border: 0px solid transparent !important;
+        border-color: transparent !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+        background-image: none !important; /* Quita iconos de validación si los hubiera */
+        /* Ajustes de tamaño */
+        width: 100% !important;
+        height: auto !important;
+        padding: 16px 20px !important;
+        font-size: 1.1rem !important;
+        color: #333 !important;
+        margin: 0 !important;
+        border-radius: 0 !important; /* Importante para que no pelee con el container */
+    }
+
+    /* Efecto Focus (Naranja) aplicado SOLO al contenedor padre */
+    .input-wrapper:focus-within {
+        background: #fff;
+        border-color: #EC8B0E;
+        box-shadow: 0 0 0 4px rgba(236, 139, 14, 0.2);
+    }
+
+    /* Placeholder */
+    .input-wrapper input::placeholder {
+        color: #999;
+    }
+
+.password-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+/* --- BOTÓN (Con Color Fijo) --- */
+.login1-btn {
+    width: 100%;
+    /* COLOR MARRÓN MIEL (Asegurado) */
+    background-color: #8A4B08;
+    color: #ffffff;
+    border: none;
+    /* TAMAÑO GRANDE */
+    padding: 18px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    .login1-btn:hover {
+        background-color: #6d3b06; /* Más oscuro al pasar mouse */
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+/* --- ENLACES Y ERRORES --- */
+.signup-link {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+    .signup-link a {
+        color: #EC8B0E;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+            color: #8A4B08;
+        }
+
+.error-message {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #ffecec;
+    color: #d8000c;
+    border: 1px solid #d8000c;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: none;
+}
+
+    .error-message.show {
+        display: block;
+    }
+
+/* --- LOADER (Animación de carga) --- */
+.btn-loader {
+    display: none;
+    gap: 4px;
+}
+
+.login1-btn.loading .btn-text {
+    display: none;
+}
+
+.login1-btn.loading .btn-loader {
+    display: flex;
+}
+
+.loader-bar {
+    width: 4px;
+    height: 18px;
+    background: white;
+    animation: loader 1s infinite;
+}
+
+    .loader-bar:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .loader-bar:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+@keyframes loader {
+    0%, 100% {
+        height: 10px;
+    }
+
+    50% {
+        height: 20px;
+    }
+}

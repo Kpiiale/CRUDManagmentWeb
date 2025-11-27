@@ -2,23 +2,43 @@
 @inject NavigationManager NavManager
 @rendermode InteractiveServer 
 <style>
-    /* 1. HACK NAVBAR: Mismo color, sin borde */
+    /* --- 1. NAVBAR ESTILO "HANTA" --- */
     .main-navbar {
+       
         background-color: #EC8B0E !important;
         border-bottom: none !important;
         box-shadow: none !important;
+        padding: 1rem 5% !important;
+        align-items: center !important;
     }
 
     .main-navbar-list li a {
         color: #fff !important;
+        text-transform: uppercase !important;
+        font-size: 0.75rem !important; 
+        font-weight: 800 !important; 
+        letter-spacing: 1px !important; 
+        font-family: 'Segoe UI', sans-serif !important;
+        background-color: transparent !important;
+        padding: 5px 0 !important; 
+        margin: 0 15px !important;
+        transition: opacity 0.3s ease !important;
     }
 
-        /* Efecto hover un poco más claro */
         .main-navbar-list li a:hover {
-            background-color: rgba(255,255,255,0.2) !important;
+            background-color: transparent !important;
+            opacity: 0.7 !important;
+            color: #fff !important;
         }
 
-    /* HACK LADOS BLANCOS */
+    .main-navbar a.navbar-brand, .main-navbar .brand {
+        color: #fff !important;
+        font-weight: bold !important;
+        font-size: 1.2rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 2px !important;
+    }
+
     article.content, main, .content {
         padding: 0 !important;
         max-width: 100vw !important;
@@ -28,17 +48,20 @@
     body {
         margin: 0;
         padding: 0;
+        background-color: #EC8B0E; 
     }
 </style>
 
 <div class="home-page-container">
 
-    <!-- HERO SECTION -->
     <section class="hero-section">
         <div class="container hero-content">
             <div class="hero-text">
-                <h1 class="hero-title">Original Honeycomb</h1>
-                <p class="hero-subtitle">La mejor miel orgánica y fresca directamente del panal a tu mesa.</p>
+                <h1 class="hero-title">Bee App</h1>
+                <p class="hero-subtitle">
+                    La plataforma donde los emprendedores convierten su talento en talleres
+                    y los usuarios encuentran su próxima pasión.
+                </p>
                 <div class="hero-actions">
                     <button class="btn-honey-primary" @onclick="IrALogin">Ingresar</button>
                     <button class="btn-honey-outline" @onclick="IrRegistrar">Registrarte</button>
@@ -56,12 +79,10 @@
         <!-- OLA TIPO "GOTEO" (DRIP) -->
         <div class="wave-divider">
             <!-- He cambiado el SVG para que parezca miel goteando -->
-            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
-                <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
-                <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+             <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
             </svg>
-        </div>
+            </div>
     </section>
 
     <!-- FEATURES -->
@@ -73,36 +94,124 @@
         <div class="features-grid">
             <div class="feature-item">
                 <div class="icon-box">🍯</div>
-                <h3>Miel Natural</h3>
-                <p>Proceso 100% natural sin aditivos.</p>
+                <h3>Soy Emprendedor</h3>
+                <p>Publica talleres presenciales (cocina, manualidades, yoga). Gestiona inscripciones y pagos en un solo lugar.</p>
             </div>
             <div class="feature-item">
                 <div class="icon-box">🌿</div>
-                <h3>Orgánica</h3>
-                <p>Certificación de producto libre de químicos.</p>
+                <h3>Soy Usuario</h3>
+                <p>Explora actividades cerca de ti. Desde aprender a pintar hasta catas de vino. Reserva tu cupo fácilmente.</p>
             </div>
             <div class="feature-item">
                 <div class="icon-box">🛡️</div>
-                <h3>Bioseguridad</h3>
-                <p>Estándares de higiene y seguridad altos.</p>
+                <h3>Soy Administrador</h3>
+                <p>Gestiona todas las actividades y usuarios.</p>
             </div>
         </div>
     </section>
 
     <!-- ABOUT -->
+    <!-- SECCIÓN ABOUT: LA COLMENA DIGITAL -->
     <section class="about-section">
         <div class="container about-wrapper">
-            <div class="about-img-placeholder"></div>
+
+            <!-- Lado Izquierdo: La Historia/Misión -->
             <div class="about-content">
-                <span class="big-number">25</span>
-                <h3>AÑOS DE EXPERIENCIA</h3>
-                <p>Llevamos décadas proveyendo la mejor miel.</p>
-                <button class="btn-text-only">Leer más &rarr;</button>
+                <span class="mini-title">Nuestra Misión</span>
+                <h3>LA COLMENA DE TALENTOS</h3>
+                <p>
+                    Bee App nació como un proyecto académico con una visión clara: <strong>democratizar la educación no formal.</strong>
+                </p>
+                <p>
+                    Creemos que todos tienen un talento que enseñar y algo nuevo que aprender. Nuestra plataforma centraliza la gestión de talleres, pagos y reservas, permitiendo que la comunidad crezca y comparta conocimiento de forma dulce y sencilla.
+                </p>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Seguro</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">+50</span>
+                        <span class="stat-label">Talleres</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Soporte</span>
+                    </div>
+                </div>
+                <button class="btn-honey-primary" style="margin-top: 20px;" onclick="window.open('https://github.com/Kpiiale/CRUDManagmentWeb.git')">
+                    Ver Documentación
+                </button>
             </div>
+            <div class="about-image-box">
+
+                <div class="blob-bg"></div>
+                <img src="https://e7.pngegg.com/pngimages/138/702/png-clipart-yellow-and-black-bee-illustration-bee-insect-cartoon-bee-honey-bee-food.png" alt="Desarrollo Bee App" class="tech-img" />
+            </div>
+
         </div>
     </section>
-</div>
 
+    <footer class="dark-footer">
+        
+        <div class="footer-wave-top">
+             <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+
+        <div class="container footer-content">
+            <div class="footer-col brand-col">
+                <h3 class="footer-logo">Bee App</h3>
+                <p>La plataforma líder para conectar talento y pasión. Descubre talleres únicos o gestiona tu emprendimiento con nuestras herramientas profesionales.</p>
+                <div class="social-links">
+                    <!-- Iconos simulados -->
+                    <a href="#">FB</a>
+                    <a href="#">IG</a>
+                    <a href="#">TW</a>
+                    <a href="#">LI</a>
+                </div>
+            </div>
+
+            <!-- Columna 2: Enlaces -->
+            <div class="footer-col links-col">
+                <h4>Descubrir</h4>
+                <ul>
+                    <li><a href="#">Talleres de Cocina</a></li>
+                    <li><a href="#">Manualidades</a></li>
+                    <li><a href="#">Yoga y Bienestar</a></li>
+                    <li><a href="#">Música</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 3: Legal / Cuenta -->
+            <div class="footer-col links-col">
+                <h4>Soporte</h4>
+                <ul>
+                    <li><a href="#">Centro de Ayuda</a></li>
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Política de Privacidad</a></li>
+                    <li><a href="/login">Iniciar Sesión</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 4: Newsletter -->
+            <div class="footer-col contact-col">
+                <h4>Boletín</h4>
+                <p>Suscríbete para recibir las últimas novedades y ofertas dulces.</p>
+                <div class="newsletter-box">
+                    <input type="email" placeholder="Tu correo..." />
+                    <button>🐝</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2024 Bee App. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</div> <!-- Fin de home-page-container -->
 
 @code {
     private void IrALogin()

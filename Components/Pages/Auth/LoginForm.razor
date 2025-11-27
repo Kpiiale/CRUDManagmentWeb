@@ -5,6 +5,39 @@
 @inject CRUDManagmentWeb.Services.AuthService AuthService
 @inject NavigationManager NavigationManager
 
+<style>
+    /* --- ARREGLO DEL NAVBAR --- */
+    .main-navbar {
+        display: flex !important; /* Obliga a mostrarlo */
+        position: fixed !important; /* Lo fija en la pantalla */
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #EC8B0E !important; /* Transparente */
+        border: none !important;
+        box-shadow: none !important;
+        /* LA CLAVE: Z-Index mayor que el del login-container (que es 9999) */
+        z-index: 20000 !important;
+    }
+
+    /* Aseguramos que las letras sean blancas para que se vean sobre el naranja */
+    .main-navbar-list li a {
+        color: white !important;
+        font-weight: bold !important;
+    }
+
+        /* Hover suave */
+        .main-navbar-list li a:hover {
+            background-color: rgba(255,255,255,0.2) !important;
+        }
+
+    /* Quitamos márgenes del layout para pantalla completa */
+    article.content, main, .content {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100vw !important;
+    }
+</style>
 <div class="login-container">
     <div class="login-card">
         <div class="login-header">

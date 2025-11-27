@@ -63,7 +63,7 @@
 }
 
 .btn-honey-primary {
-    background-color: #8A4B08; /* Marrón Caramelo Oscuro */
+    background-color: #8A4B08; 
     color: white;
     padding: 12px 35px;
     border: none;
@@ -207,45 +207,140 @@
 
 /* --- ABOUT SECTION --- */
 .about-section {
-    background-color: #FFF9F0;
-    padding: 80px 0;
+    background-color: #FFF9F0; /* Fondo crema */
+    padding: 100px 0;
+    position: relative;
+    z-index: 2;
 }
 
 .about-wrapper {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 50px;
+    grid-template-columns: 1fr 1fr; /* Texto izquierda, Imagen derecha */
+    gap: 60px;
     align-items: center;
 }
 
-.big-number {
-    font-size: 6rem;
-    background: -webkit-linear-gradient(#EC8B0E, #D35400); /* Numero con degradado */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 900;
-    line-height: 1;
+/* Títulos y Texto */
+.mini-title {
+    color: #EC8B0E;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
     display: block;
+    margin-bottom: 10px;
 }
 
 .about-content h3 {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: #333;
-    margin-bottom: 1rem;
+    margin-bottom: 20px;
     font-weight: 800;
+    line-height: 1.2;
 }
 
-.btn-text-only {
-    background: none;
-    border: none;
-    color: #8A4B08;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-top: 20px;
-    text-decoration: underline;
+.about-content p {
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    font-size: 1.05rem;
 }
 
+.about-content strong {
+    color: #EC8B0E;
+}
+
+/* Estadísticas (Grid de 3) */
+.stats-grid {
+    display: flex;
+    gap: 30px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(236, 139, 14, 0.2); /* Línea divisoria suave */
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #EC8B0E;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #777;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* Imagen Derecha (Efecto Tech) */
+.about-image-box {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Mancha de fondo naranja decorativa */
+.blob-bg {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    background-color: #FDEBD0; /* Naranja muy claro */
+    border-radius: 50%;
+    z-index: 0;
+    animation: blob-pulse 6s infinite ease-in-out;
+}
+
+.tech-img {
+    position: relative;
+    z-index: 1;
+    max-width: 100%;
+    width: 400px;
+    /* Sombra suave para que parezca 3D */
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
+    transition: transform 0.3s;
+}
+
+    .tech-img:hover {
+        transform: scale(1.05) rotate(2deg);
+    }
+
+@keyframes blob-pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .about-wrapper {
+        grid-template-columns: 1fr; /* Una columna en móvil */
+        text-align: center;
+    }
+
+    .stats-grid {
+        justify-content: center;
+    }
+
+    .about-image-box {
+        margin-top: 40px;
+        order: -1; /* Pone la imagen arriba en móvil si prefieres, o quita esta linea */
+    }
+}
 /* Responsive */
 @media (max-width: 768px) {
     .hero-content, .about-wrapper {
@@ -254,6 +349,179 @@
     }
 
     .hero-actions {
+        justify-content: center;
+    }
+}
+/* --- FOOTER PROFESIONAL DARK --- */
+.dark-footer {
+    background-color: #151515; /* Negro elegante (no puro) */
+    color: #b0b0b0; /* Texto gris claro para leer mejor que blanco puro */
+    position: relative;
+    padding-top: 160px; /* Espacio para la ola */
+    padding-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+/* OLA DE TRANSICIÓN */
+.footer-wave-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+}
+
+    .footer-wave-top svg {
+        position: relative;
+        display: block;
+        width: calc(100% + 1.3px);
+        height: 120px;
+    }
+
+    /* IMPORTANTE: El relleno es color CREMA (#FFF9F0) 
+   Para que parezca que la sección anterior se curva sobre lo negro */
+    .footer-wave-top .shape-fill {
+        fill: #FFF9F0;
+    }
+
+/* Estructura de Columnas */
+.footer-content {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+    gap: 40px;
+    margin-bottom: 60px;
+}
+
+/* Títulos */
+.footer-logo {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.footer-col h4 {
+    color: white;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+.footer-col p {
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Enlaces */
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+}
+
+    .footer-col ul li {
+        margin-bottom: 12px;
+    }
+
+        .footer-col ul li a {
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+            .footer-col ul li a:hover {
+                color: #EC8B0E; /* Naranja Honey al pasar el mouse */
+                padding-left: 5px; /* Pequeño movimiento a la derecha */
+            }
+
+/* Redes Sociales (Simuladas) */
+.social-links {
+    display: flex;
+    gap: 10px;
+}
+
+    .social-links a {
+        width: 35px;
+        height: 35px;
+        background-color: #222;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        text-decoration: none;
+        font-size: 0.7rem;
+        font-weight: bold;
+        transition: background 0.3s;
+    }
+
+        .social-links a:hover {
+            background-color: #EC8B0E;
+        }
+
+/* Newsletter Input */
+.newsletter-box {
+    display: flex;
+    position: relative;
+}
+
+    .newsletter-box input {
+        width: 100%;
+        padding: 12px 15px;
+        background-color: #222;
+        border: 1px solid #333;
+        color: white;
+        border-radius: 4px;
+        outline: none;
+    }
+
+        .newsletter-box input:focus {
+            border-color: #EC8B0E;
+        }
+
+    .newsletter-box button {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        background-color: #EC8B0E;
+        border: none;
+        color: white;
+        width: 35px;
+        height: 32px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+/* Copyright Bar */
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid #222;
+    padding-top: 30px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .social-links {
         justify-content: center;
     }
 }
