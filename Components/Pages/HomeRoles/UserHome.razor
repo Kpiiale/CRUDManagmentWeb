@@ -58,21 +58,18 @@ else
             <p>@reservationActivity.Description</p>
             <p><strong>Capacidad:</strong> @reservationActivity.Capacity</p>
             <p><strong>Precio:</strong> @($"{reservationActivity.Price} {reservationActivity.Currency}")</p>
-
             <label>Cantidad de cupos:</label>
-            <input type="number" min="1" max="@reservationActivity.Capacity"
-                   @bind="quantity" class="form-control" />
+            <div class="input-with-arrow">
+                <input type="number" min="1" max="@reservationActivity.Capacity"
+                       @bind="quantity" class="form-control" />
 
-            @if (quantity > 0)
+                <button class="btn-arrow" @onclick="ShowReservationButton">↑</button>
+            </div>
+
+            @if (showReserve && quantity > 0)
             {
-                <button class="btn btn-primary" @onclick="ConfirmReservation">Confirmar reserva</button>
+                <button class="btn-mini" @onclick="ConfirmReservation">Reservar</button>
             }
-
-            @if (!string.IsNullOrEmpty(message))
-            {
-                <p class="alert">@message</p>
-            }
-
             <button class="btn btn-close" @onclick="CloseReservation">Cerrar</button>
         </div>
     </div>
@@ -84,6 +81,8 @@ else
     private ActivityDto? reservationActivity;
     private int quantity = 0;
     private string? message;
+    private bool showReserve = false;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -129,4 +128,13 @@ else
             message = "Error al realizar la reserva.";
         }
     }
+    private void ShowReservationButton()
+    {
+        if (quantity > 0)
+        {
+            showReserve = true;
+        }
+    }
+
+
 }

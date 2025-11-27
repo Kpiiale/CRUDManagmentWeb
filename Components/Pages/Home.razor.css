@@ -1,0 +1,259 @@
+﻿/* Variables locales para el Home */
+:root {
+    --honey-bg: #F4B400; /* EL MISMO COLOR QUE TU NAVBAR */
+    --honey-dark: #8B5E34;
+    --white-cream: #FFFBF0;
+}
+
+/* --- CONFIGURACIÓN DE PÁGINA --- */
+.home-page-container {
+    width: 100%;
+    overflow-x: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --- HERO SECTION --- */
+.hero-section {
+    /* COLOR EXACTO DE LA IMAGEN (#EC8B0E) */
+    background-color: #EC8B0E;
+    /* Opcional: Un degradado sutil para que se vea mas "premium" como en la foto */
+    background: linear-gradient(135deg, #F09819 0%, #EC8B0E 100%);
+    position: relative;
+    padding-top: 3rem;
+    padding-bottom: 12rem; /* Espacio para el goteo */
+    color: white;
+    width: 100%;
+}
+
+.hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.hero-text {
+    flex: 1;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 10px rgba(138, 75, 8, 0.2); /* Sombra suave marrón */
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+}
+
+/* Botones */
+.hero-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-honey-primary {
+    background-color: #8A4B08; /* Marrón Caramelo Oscuro */
+    color: white;
+    padding: 12px 35px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.btn-honey-outline {
+    background-color: white;
+    border: 2px solid white;
+    color: #8A4B08; /* Texto marrón */
+    padding: 12px 35px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-honey-primary:hover {
+    transform: translateY(-2px);
+    background-color: #6d3b06;
+}
+
+.btn-honey-outline:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Imagen Flotante */
+.hero-image-box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.honey-circle img {
+    max-width: 350px;
+    width: 100%;
+    animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+/* --- OLA / GOTEO (WAVE) --- */
+.wave-divider {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    z-index: 1;
+}
+
+    .wave-divider svg {
+        position: relative;
+        display: block;
+        width: calc(100% + 1.3px);
+        height: 180px; /* Un poco más alto para que el goteo se note más */
+        transform: rotate(180deg); /* INVERTIDO PARA QUE PAREZCA GOTEO */
+    }
+
+    /* IMPORTANTE: El color de relleno es el CREMA (#FFF9F0) */
+    .wave-divider .shape-fill {
+        fill: #FFF9F0;
+    }
+
+
+/* --- FEATURES SECTION --- */
+.features-section {
+    /* Color de fondo CREMA suave extraído de la imagen */
+    background-color: #FFF9F0;
+    padding: 80px 20px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.section-title span {
+    color: #EC8B0E; /* Naranja Honey */
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+.section-title h2 {
+    color: #333;
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 50px;
+}
+
+.features-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.feature-item {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 20px; /* Bordes más redondeados */
+    box-shadow: 0 10px 30px rgba(236, 139, 14, 0.1); /* Sombra anaranjada muy suave */
+    width: 260px;
+    transition: transform 0.3s;
+}
+
+    .feature-item:hover {
+        transform: translateY(-10px);
+    }
+
+.icon-box {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.feature-item h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.feature-item p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* --- ABOUT SECTION --- */
+.about-section {
+    background-color: #FFF9F0;
+    padding: 80px 0;
+}
+
+.about-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.big-number {
+    font-size: 6rem;
+    background: -webkit-linear-gradient(#EC8B0E, #D35400); /* Numero con degradado */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900;
+    line-height: 1;
+    display: block;
+}
+
+.about-content h3 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+    font-weight: 800;
+}
+
+.btn-text-only {
+    background: none;
+    border: none;
+    color: #8A4B08;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 20px;
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-content, .about-wrapper {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-actions {
+        justify-content: center;
+    }
+}

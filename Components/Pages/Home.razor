@@ -1,31 +1,108 @@
 ﻿@page "/"
 @inject NavigationManager NavManager
 @rendermode InteractiveServer 
+<style>
+    /* 1. HACK NAVBAR: Mismo color, sin borde */
+    .main-navbar {
+        background-color: #EC8B0E !important;
+        border-bottom: none !important;
+        box-shadow: none !important;
+    }
 
-<div class="home-page">
-    <div class="home-card">
-        <h1 class="home-title">Bienvenido a la App</h1>
-        <p class="home-subtitle">Gestiona usuarios fácilmente desde aquí.</p>
-        <div class="home-actions">
-            <button class="login-btn" @onclick="IrALogin">
-                <span class="btn-text">Ingresar</span>
-                <span class="btn-loader">
-                    <span class="loader-bar"></span>
-                    <span class="loader-bar"></span>
-                    <span class="loader-bar"></span>
-                </span>
-            </button>
-            <button class="login-btn" @onclick="IrRegistrar">
-                <span class="btn-text">Registrarte</span>
-                <span class="btn-loader">
-                    <span class="loader-bar"></span>
-                    <span class="loader-bar"></span>
-                    <span class="loader-bar"></span>
-                </span>
-            </button>
+    .main-navbar-list li a {
+        color: #fff !important;
+    }
+
+        /* Efecto hover un poco más claro */
+        .main-navbar-list li a:hover {
+            background-color: rgba(255,255,255,0.2) !important;
+        }
+
+    /* HACK LADOS BLANCOS */
+    article.content, main, .content {
+        padding: 0 !important;
+        max-width: 100vw !important;
+        overflow-x: hidden;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<div class="home-page-container">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">Original Honeycomb</h1>
+                <p class="hero-subtitle">La mejor miel orgánica y fresca directamente del panal a tu mesa.</p>
+                <div class="hero-actions">
+                    <button class="btn-honey-primary" @onclick="IrALogin">Ingresar</button>
+                    <button class="btn-honey-outline" @onclick="IrRegistrar">Registrarte</button>
+                </div>
+            </div>
+
+            <div class="hero-image-box">
+                <div class="honey-circle">
+                    <!-- Imagen de ejemplo -->
+                    <img src="https://www.pngall.com/wp-content/uploads/15/Minecraft-Bee-PNG-Image.png" alt="Miel" />
+                </div>
+            </div>
         </div>
-    </div>
+
+        <!-- OLA TIPO "GOTEO" (DRIP) -->
+        <div class="wave-divider">
+            <!-- He cambiado el SVG para que parezca miel goteando -->
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+                <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+                <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features-section">
+        <div class="section-title">
+            <span>¿Quiénes somos?</span>
+            <h2>MEJORES CARACTERÍSTICAS</h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="icon-box">🍯</div>
+                <h3>Miel Natural</h3>
+                <p>Proceso 100% natural sin aditivos.</p>
+            </div>
+            <div class="feature-item">
+                <div class="icon-box">🌿</div>
+                <h3>Orgánica</h3>
+                <p>Certificación de producto libre de químicos.</p>
+            </div>
+            <div class="feature-item">
+                <div class="icon-box">🛡️</div>
+                <h3>Bioseguridad</h3>
+                <p>Estándares de higiene y seguridad altos.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about-section">
+        <div class="container about-wrapper">
+            <div class="about-img-placeholder"></div>
+            <div class="about-content">
+                <span class="big-number">25</span>
+                <h3>AÑOS DE EXPERIENCIA</h3>
+                <p>Llevamos décadas proveyendo la mejor miel.</p>
+                <button class="btn-text-only">Leer más &rarr;</button>
+            </div>
+        </div>
+    </section>
 </div>
+
 
 @code {
     private void IrALogin()
