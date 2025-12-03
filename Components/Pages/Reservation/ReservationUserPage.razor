@@ -1,11 +1,12 @@
 ﻿@page "/user/reservation"
 @using CRUDManagmentWeb.Models.Reservation
+@using CRUDManagmentWeb.Models.Review
 @using CRUDManagmentWeb.Services
 @inject ReservationService ReservationService
+@inject ReviewService ReviewService
 @inject AuthService AuthService
 @inject PaymentService PaymentService
 @inject NavigationManager Navigation
-
 
 <div class="user-container">
     <div class="user-card">
@@ -46,17 +47,29 @@
                                 <td>@($"{r.UnitPrice} USD")</td>
                                 <td>@($"{r.TotalAmount} USD")</td>
                                 <td>
-                                    <span class="reserve-badge  @(r.Status == "Confirmed" ? "status-confirmed" :
-                                                r.Status == "Cancelled" ? "status-cancelled" :
-                                                "status-pending")"> @r.Status
-                                    </span>
-                                </td>
-                                <td>@r.ReservedAt.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td>@(r.ExpiresAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
-                                <td>
-                                    <button class="user-btn small pay" @onclick="() => IniciarPago(r.Id)">
-                                        Pagar
-                                    </button>
+                                    <span class="reserve-badge @(r.Status == "Confirmed" ? "status-confirmed" :
+                                                                                                                                    r.Status == "Cancelled" ? "status-cancelled" :
+                                                                                                                                    "status-pending")">
+                                @r.Status
+                            </span>
+                        </td>
+                        <td>@r.ReservedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@(r.ExpiresAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                        <td>
+                            @if (r.Status == "Confirmed")
+                                    {
+                                        <button class="user-btn small rate"
+                                                @onclick="() => AbrirPopup(r.ActivityId)"
+                                                disabled="@YaCalificado(r.ActivityId)">
+                                            @(YaCalificado(r.ActivityId) ? "Calificado" : "Calificar")
+                                        </button>
+                                    }
+                                    else if (r.Status == "Pending")
+                                    {
+                                        <button class="user-btn small pay" @onclick="() => IniciarPago(r.Id)">
+                                            Pagar
+                                        </button>
+                                    }
                                 </td>
                             </tr>
                         }
@@ -73,9 +86,51 @@
         }
     </div>
 </div>
+
+@if (mostrarPopup)
+{
+    <div class="popup-overlay">
+        <div class="popup-content">
+            <h3>Califica la actividad</h3>
+
+            <!-- Input numérico + botones +/- -->
+            <div class="rating-input-row" style="display:flex; align-items:center; justify-content:center; gap:8px; margin:12px 0 8px;">
+                <button class="small-control" @onclick="DecrementRating" type="button">-</button>
+
+                <input type="number"
+                       min="1"
+                       max="5"
+                       @bind="ratingSeleccionado"
+                       @bind:event="oninput"
+                       class="rating-input"
+                       style="width:72px; padding:8px; font-size:18px; text-align:center; border-radius:6px; border:1px solid #ccc;" />
+
+                <button class="small-control" @onclick="IncrementRating" type="button">+</button>
+            </div>
+
+            <div class="rating-hint" style="font-size:12px; color:#666; margin-bottom:10px;">
+                Introduce un número entre 1 y 5
+            </div>
+
+            <button class="user-btn small confirm"
+                    @onclick="EnviarCalificacion"
+                    disabled="@(ratingSeleccionado < 1 || ratingSeleccionado > 5)">
+                Guardar
+            </button>
+            <button class="user-btn small cancel" @onclick="CerrarPopup">Cancelar</button>
+        </div>
+    </div>
+}
+
 @code {
     private List<ReservationResponse>? reservations;
     private string? message;
+
+    // popup
+    private bool mostrarPopup = false;
+    private int actividadSeleccionada;
+    private int ratingSeleccionado = 0;
+    private HashSet<int> actividadesCalificadas = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -103,7 +158,7 @@
             var url = await PaymentService.CreateCheckoutSessionAsync(reservationId);
             if (!string.IsNullOrEmpty(url))
             {
-                Navigation.NavigateTo(url, forceLoad: true); // redirige a Stripe Checkout
+                Navigation.NavigateTo(url, forceLoad: true);
             }
             else
             {
@@ -115,4 +170,76 @@
             message = $"Error al iniciar pago: {ex.Message}";
         }
     }
+
+    private void AbrirPopup(int activityId)
+    {
+        actividadSeleccionada = activityId;
+        ratingSeleccionado = 0; // Mantengo 0 para que el usuario elija; si prefieres prellenar con 1, cambia a 1.
+        mostrarPopup = true;
+    }
+
+    private void CerrarPopup()
+    {
+        mostrarPopup = false;
+    }
+
+    private async Task EnviarCalificacion()
+    {
+        // Validación de rango por si el usuario metió algo fuera de 1..5
+        if (ratingSeleccionado < 1 || ratingSeleccionado > 5)
+        {
+            message = "La calificación debe ser un número entre 1 y 5.";
+            return;
+        }
+
+        try
+        {
+            var request = new AddReviewRequest
+            {
+                ActivityId = actividadSeleccionada,
+                Rating = (byte)ratingSeleccionado,
+                Title = "Mi reseña",
+                Comment = "Muy buena actividad"
+            };
+
+            var result = await ReviewService.AddAsync(actividadSeleccionada, request);
+            if (result != null)
+            {
+                actividadesCalificadas.Add(actividadSeleccionada);
+                message = "Calificación guardada correctamente.";
+            }
+            else
+            {
+                message = "Error al guardar la calificación.";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al calificar: {ex.Message}";
+        }
+        finally
+        {
+            mostrarPopup = false;
+        }
+    }
+
+    private void SeleccionarRating(int valor)
+    {
+        ratingSeleccionado = valor;
+        StateHasChanged(); // Fuerza el refresco del componente
+    }
+
+    private void IncrementRating()
+    {
+        if (ratingSeleccionado < 5) ratingSeleccionado++;
+        else ratingSeleccionado = 5;
+    }
+
+    private void DecrementRating()
+    {
+        if (ratingSeleccionado > 1) ratingSeleccionado--;
+        else ratingSeleccionado = 1;
+    }
+
+    private bool YaCalificado(int activityId) => actividadesCalificadas.Contains(activityId);
 }
