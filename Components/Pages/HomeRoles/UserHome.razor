@@ -41,6 +41,7 @@ else
         <div class="modal-content" @onclick:stopPropagation="true">
             <h2>@selectedActivity.Title</h2>
             <p><strong>Descripción:</strong> @selectedActivity.Description</p>
+            <p><strong>Rating:</strong> @selectedActivity.AvgRating</p>
             <p><strong>Precio:</strong> @($"{selectedActivity.Price} {selectedActivity.Currency}")</p>
             <p><strong>Ubicación:</strong> @selectedActivity.LocationText</p>
             <p><strong>Inicio:</strong> @(selectedActivity.StartAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</p>

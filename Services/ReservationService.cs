@@ -57,5 +57,27 @@ namespace CRUDManagmentWeb.Services
 
             return response?.Items.ToList() ?? new List<ReservationResponse>();
         }
+        public async Task<ReservationResponse?> UpdateStatusAsync(int reservationId, bool isDone)
+        {
+            await SetAuthHeaderAsync();
+
+            var response = await _httpClient.PutAsJsonAsync(
+                $"{BaseUrl}/{reservationId}/status",
+                isDone
+            );
+
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"PUT status: {response.StatusCode} - {content}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                await _jsRuntime.InvokeVoidAsync("alert", $"Error al actualizar estado: {response.StatusCode} - {content}");
+                return null;
+            }
+
+            return await response.Content.ReadFromJsonAsync<ReservationResponse>();
+        }
+
+
     }
 }

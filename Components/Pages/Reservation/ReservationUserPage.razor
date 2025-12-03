@@ -46,8 +46,9 @@
                                 <td>@($"{r.UnitPrice} USD")</td>
                                 <td>@($"{r.TotalAmount} USD")</td>
                                 <td>
-                                    <span class="user-badge @(r.Status == "Activo" ? "active" : "inactive")">
-                                        @r.Status
+                                    <span class="reserve-badge  @(r.Status == "Confirmed" ? "status-confirmed" :
+                                                r.Status == "Cancelled" ? "status-cancelled" :
+                                                "status-pending")"> @r.Status
                                     </span>
                                 </td>
                                 <td>@r.ReservedAt.ToString("dd/MM/yyyy HH:mm")</td>

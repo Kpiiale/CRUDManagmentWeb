@@ -1,0 +1,29 @@
+﻿@page "/payment-success/{reservationId:int}"
+@using CRUDManagmentWeb.Services
+@inject ReservationService ReservationService
+@inject NavigationManager Navigation
+
+<div class="payment-container">
+    <div class="payment-card">
+        <h3>Pago procesado correctamente</h3>
+        <p>Tu pago fue exitoso. Haz clic en el botón para regresar y confirmar tu reserva</p>
+        <button class="btn btn-primary" @onclick="ConfirmarReserva">Confirmar y regresar</button>
+    </div>
+</div>
+@code {
+    [Parameter] public int ReservationId { get; set; }
+
+    private async Task ConfirmarReserva()
+    {
+        var result = await ReservationService.UpdateStatusAsync(ReservationId, true);
+
+        if (result != null)
+        {
+            Navigation.NavigateTo("/user/reservation");
+        }
+        else
+        {
+            Console.Error.WriteLine("Error al confirmar la reserva");
+        }
+    }
+}

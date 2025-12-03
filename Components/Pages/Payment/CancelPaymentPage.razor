@@ -1,0 +1,30 @@
+﻿@page "/payment-cancel/{reservationId:int}"
+@using CRUDManagmentWeb.Services
+@inject ReservationService ReservationService
+@inject NavigationManager Navigation
+
+<div class="payment-container">
+    <div class="payment-card">
+        <h3>Pago cancelado</h3>
+        <p>Tu pago fue cancelado. Haz clic en el botón para regresar y mantener tu reserva pendiente.</p>
+        <button class="btn btn-primary" @onclick="ConfirmarReserva">Cancelar y regresar</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int ReservationId { get; set; }
+
+    private async Task ConfirmarReserva()
+    {
+        var result = await ReservationService.UpdateStatusAsync(ReservationId, false);
+
+        if (result != null)
+        {
+            Navigation.NavigateTo("/user/reservation");
+        }
+        else
+        {
+            Console.Error.WriteLine("Error al confirmar la reserva");
+        }
+    }
+}

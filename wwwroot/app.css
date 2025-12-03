@@ -686,3 +686,85 @@ body {
         transform: translate(-2px, -2px);
         box-shadow: 3px 3px 0 #000000;
     }
+
+.reserve-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: white; 
+}
+
+.status-confirmed {
+    background-color: #28a745;
+}
+
+.status-cancelled {
+    background-color: #dc3545; 
+}
+
+.status-pending {
+    background-color: #6c757d; 
+}
+
+.payment-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    width: 100%;
+}
+
+.payment-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 40px 50px;
+    max-width: 500px;
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+    /* Título */
+    .payment-card h3 {
+        color: #333;
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
+    /* Texto */
+    .payment-card p {
+        color: #555;
+        font-size: 1rem;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+
+    /* Botón principal (amarillo beeApp) */
+    .payment-card .btn-primary {
+        background-color: #f4b400;
+        border: none;
+        color: #fff;
+        padding: 10px 25px;
+        font-size: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+
+        .payment-card .btn-primary:hover {
+            background-color: #e0a600;
+            transform: translateY(-2px);
+        }
+
+/* Animación */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
