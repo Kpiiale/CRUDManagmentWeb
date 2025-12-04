@@ -1,0 +1,98 @@
+﻿@page "/employee/reservation"
+@using CRUDManagmentWeb.Models.Reservation
+@using CRUDManagmentWeb.Services
+@inject ReservationService ReservationService
+@inject AuthService AuthService
+@inject IJSRuntime JS
+
+<div class="user-container">
+    <div class="user-card">
+        <div class="user-header">
+            <h2>Reservas de la Empresa (Empleado)</h2>
+            <p class="text-muted">Estas son las reservas asociadas a la empresa donde trabajas</p>
+        </div>
+
+        <div class="user-table">
+            @if (reservations == null)
+            {
+                <p>Cargando reservas...</p>
+            }
+            else if (!reservations.Any())
+            {
+                <p>No hay reservas registradas para tu empresa.</p>
+            }
+            else
+            {
+                <table class="user-table-content">
+                    <thead>
+                        <tr>
+                            <th>Actividad</th>
+                            <th>Cantidad</th>
+                            <th>Precio unitario</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Reservado en</th>
+                            <th>Expira en</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in reservations)
+                        {
+                            <tr>
+                                <td>@r.ActivityId</td>
+                                <td>@r.Quantity</td>
+                                <td>@($"{r.UnitPrice} USD")</td>
+                                <td>@($"{r.TotalAmount} USD")</td>
+                                <td>
+                                    <span class="user-badge @(r.Status == "Activo" ? "active" : "inactive")">
+                                        @r.Status
+                                    </span>
+                                </td>
+                                <td>@r.ReservedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@(r.ExpiresAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(notificationMessage))
+        {
+            <div class="user-notification @notificationType">
+                @notificationMessage
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<ReservationResponse> reservations = new();
+    private string? notificationMessage;
+    private string? notificationType;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await LoadReservations();
+        }
+        catch (Exception ex)
+        {
+            ShowNotification($"Error al cargar reservas: {ex.Message}", "error");
+        }
+    }
+
+    private async Task LoadReservations()
+    {
+        // 👉 No se pasa companyId, el backend lo obtiene del empleado
+        reservations = await ReservationService.GetByCompanyAsync(null, page: 1, pageSize: 20);
+        StateHasChanged();
+    }
+
+    private void ShowNotification(string message, string type)
+    {
+        notificationMessage = message;
+        notificationType = type;
+    }
+}

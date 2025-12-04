@@ -47,16 +47,25 @@ namespace CRUDManagmentWeb.Services
             return response?.Items.ToList() ?? new List<ReservationResponse>();
         }
 
-        public async Task<List<ReservationResponse>> GetByCompanyAsync(int companyId, int page = 1, int pageSize = 20)
+        public async Task<List<ReservationResponse>> GetByCompanyAsync(int? companyId = null, int page = 1, int pageSize = 20)
         {
             await SetAuthHeaderAsync();
 
-            var response = await _httpClient.GetFromJsonAsync<PagedReservationResponse>(
-                $"{BaseUrl}/by-company/{companyId}?page={page}&pageSize={pageSize}"
-            );
+            string url;
+            if (companyId.HasValue && companyId.Value > 0)
+            {
+                url = $"{BaseUrl}/by-company/{companyId.Value}?page={page}&pageSize={pageSize}";
+            }
+            else
+            {
+              
+                url = $"{BaseUrl}/by-company?page={page}&pageSize={pageSize}";
+            }
 
-            return response?.Items.ToList() ?? new List<ReservationResponse>();
+            var response = await _httpClient.GetFromJsonAsync<PagedReservationResponse>(url);
+            return response?.Items?.ToList() ?? new List<ReservationResponse>();
         }
+
         public async Task<ReservationResponse?> UpdateStatusAsync(int reservationId, bool isDone)
         {
             await SetAuthHeaderAsync();

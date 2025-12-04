@@ -27,11 +27,11 @@ namespace CRUDManagmentWeb.Services
             var response = await _httpClient.PostAsJsonAsync(BaseUrl, request);
             var content = await response.Content.ReadAsStringAsync();
 
-            Console.WriteLine($"📤 POST actividad: {response.StatusCode} - {content}");
+            Console.WriteLine($"POST actividad: {response.StatusCode} - {content}");
 
             if (!response.IsSuccessStatusCode)
             {
-                await _jsRuntime.InvokeVoidAsync("alert", $"❌ Error al crear actividad: {response.StatusCode} - {content}");
+                await _jsRuntime.InvokeVoidAsync("alert", $"Error al crear actividad: {response.StatusCode} - {content}");
                 return false;
             }
 
@@ -49,7 +49,7 @@ namespace CRUDManagmentWeb.Services
             var response = await _httpClient.SendAsync(httpRequest);
             var content = await response.Content.ReadAsStringAsync();
 
-            Console.WriteLine($"🔄 PATCH actividad: {response.StatusCode} - {content}");
+            Console.WriteLine($"PATCH actividad: {response.StatusCode} - {content}");
 
             return response.IsSuccessStatusCode;
         }
