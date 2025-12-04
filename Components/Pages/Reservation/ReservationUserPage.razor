@@ -93,7 +93,6 @@
     </div>
 </div>
 
-<!-- Fragmento de popup actualizado -->
 @if (mostrarPopup)
 {
     <div class="popup-overlay">
@@ -200,7 +199,7 @@
     private async Task IniciarPago(long reservationId)
     {
         try
-        {
+        { 
             var url = await PaymentService.CreateCheckoutSessionAsync(reservationId);
             if (!string.IsNullOrEmpty(url))
             {
@@ -275,6 +274,7 @@
             tituloReview = string.Empty;
             comentarioReview = string.Empty;
             ratingSeleccionado = 0;
+            StateHasChanged();
         }
     }
 
