@@ -18,6 +18,14 @@
                         <span class="loader-bar"></span>
                     </span>
                 </button>
+                 <button class="main-btn" @onclick="GoReservations">
+                    <span class="btn-text">Reservas</span>
+                    <span class="btn-loader">
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                        <span class="loader-bar"></span>
+                    </span>
+                </button>
             </div>
         </div>
     </div>
@@ -26,6 +34,10 @@
     private void GoActivities()
     {
         NavManager.NavigateTo("/employee/activities");
+    }
+    private void GoReservations()
+    {
+        NavManager.NavigateTo("/company/reservation");
     }
     
 }

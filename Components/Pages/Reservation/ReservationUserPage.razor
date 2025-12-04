@@ -56,20 +56,26 @@
                         <td>@r.ReservedAt.ToString("dd/MM/yyyy HH:mm")</td>
                         <td>@(r.ExpiresAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
                         <td>
-                            @if (r.Status == "Confirmed")
-                                    {
-                                        <button class="user-btn small rate"
-                                                @onclick="() => AbrirPopup(r.ActivityId)"
-                                                disabled="@YaCalificado(r.ActivityId)">
-                                            @(YaCalificado(r.ActivityId) ? "Calificado" : "Calificar")
-                                        </button>
-                                    }
-                                    else if (r.Status == "Pending")
+                            @if (r.Status == "Pending")
                                     {
                                         <button class="user-btn small pay" @onclick="() => IniciarPago(r.Id)">
                                             Pagar
                                         </button>
                                     }
+                                    else if (r.Status == "Confirmed" && !YaCalificado(r.ActivityId))
+                                    {
+                                        <button class="user-btn small rate"
+                                                @onclick="() => AbrirPopup(r.ActivityId)">
+                                            Calificar
+                                        </button>
+                                    }
+                                    else if (r.Status == "Confirmed" && YaCalificado(r.ActivityId))
+                                    {
+                                        <span style="color:green; font-weight:600;">
+                                             Calificado
+                                        </span>
+                                    }
+
                                 </td>
                             </tr>
                         }
@@ -87,34 +93,58 @@
     </div>
 </div>
 
+<!-- Fragmento de popup actualizado -->
 @if (mostrarPopup)
 {
     <div class="popup-overlay">
-        <div class="popup-content">
+        <div class="popup-content" style="max-width:420px;">
             <h3>Califica la actividad</h3>
 
-            <!-- Input numérico + botones +/- -->
-            <div class="rating-input-row" style="display:flex; align-items:center; justify-content:center; gap:8px; margin:12px 0 8px;">
-                <button class="small-control" @onclick="DecrementRating" type="button">-</button>
-
-                <input type="number"
+            <div class="star-slider-container">
+                <input type="range"
                        min="1"
                        max="5"
+                       step="1"
                        @bind="ratingSeleccionado"
-                       @bind:event="oninput"
-                       class="rating-input"
-                       style="width:72px; padding:8px; font-size:18px; text-align:center; border-radius:6px; border:1px solid #ccc;" />
+                       class="star-slider" />
 
-                <button class="small-control" @onclick="IncrementRating" type="button">+</button>
+                <div class="star-bg">
+                    ★★★★★
+                </div>
+
+                <div class="star-fg" style="width:@(ratingSeleccionado * 20)%">
+                    ★★★★★
+                </div>
             </div>
 
-            <div class="rating-hint" style="font-size:12px; color:#666; margin-bottom:10px;">
-                Introduce un número entre 1 y 5
+            <div style="text-align:center; font-size:13px; color:#666;">
+                @ratingSeleccionado de 5 estrellas
+            </div>
+
+
+            <div style="margin-bottom:8px; font-size:13px; color:#555; text-align:center;">
+                Selecciona de 1 a 5 estrellas
+            </div>
+
+            <div style="margin:10px 0;">
+                <input type="text"
+                       placeholder="Título de tu reseña"
+                       @bind="tituloReview"
+                       class="user-input"
+                       style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;" />
+            </div>
+
+            <div style="margin-bottom:14px;">
+                <textarea placeholder="Escribe tu comentario"
+                          @bind="comentarioReview"
+                          rows="4"
+                          class="user-input"
+                          style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;"></textarea>
             </div>
 
             <button class="user-btn small confirm"
                     @onclick="EnviarCalificacion"
-                    disabled="@(ratingSeleccionado < 1 || ratingSeleccionado > 5)">
+                    disabled="@(ratingSeleccionado < 1 || ratingSeleccionado > 5 || string.IsNullOrWhiteSpace(tituloReview) || string.IsNullOrWhiteSpace(comentarioReview))">
                 Guardar
             </button>
             <button class="user-btn small cancel" @onclick="CerrarPopup">Cancelar</button>
@@ -129,6 +159,8 @@
     // popup
     private bool mostrarPopup = false;
     private int actividadSeleccionada;
+    private string tituloReview = string.Empty;
+    private string comentarioReview = string.Empty;
     private int ratingSeleccionado = 0;
     private HashSet<int> actividadesCalificadas = new();
 
@@ -144,12 +176,26 @@
             }
 
             reservations = await ReservationService.GetByUserAsync(currentUser.Id);
+
+            if (reservations != null && reservations.Any())
+            {
+                foreach (var r in reservations)
+                {
+                    var reviews = await ReviewService.GetByActivityAsync(r.ActivityId);
+
+                    if (reviews != null && reviews.Reviews.Any(x => x.UserId == currentUser.Id))
+                    {
+                        actividadesCalificadas.Add(r.ActivityId);
+                    }
+                }
+            }
         }
         catch (Exception ex)
         {
             message = $"Error al cargar reservas: {ex.Message}";
         }
     }
+
 
     private async Task IniciarPago(long reservationId)
     {
@@ -174,7 +220,7 @@
     private void AbrirPopup(int activityId)
     {
         actividadSeleccionada = activityId;
-        ratingSeleccionado = 0; // Mantengo 0 para que el usuario elija; si prefieres prellenar con 1, cambia a 1.
+        ratingSeleccionado = 0;
         mostrarPopup = true;
     }
 
@@ -185,10 +231,15 @@
 
     private async Task EnviarCalificacion()
     {
-        // Validación de rango por si el usuario metió algo fuera de 1..5
         if (ratingSeleccionado < 1 || ratingSeleccionado > 5)
         {
-            message = "La calificación debe ser un número entre 1 y 5.";
+            message = "La calificación debe ser entre 1 y 5 estrellas.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(tituloReview) || string.IsNullOrWhiteSpace(comentarioReview))
+        {
+            message = "Debes escribir un título y un comentario.";
             return;
         }
 
@@ -198,15 +249,16 @@
             {
                 ActivityId = actividadSeleccionada,
                 Rating = (byte)ratingSeleccionado,
-                Title = "Mi reseña",
-                Comment = "Muy buena actividad"
+                Title = tituloReview,
+                Comment = comentarioReview
             };
 
             var result = await ReviewService.AddAsync(actividadSeleccionada, request);
+
             if (result != null)
             {
                 actividadesCalificadas.Add(actividadSeleccionada);
-                message = "Calificación guardada correctamente.";
+                message = "Calificación guardada correctamente ✅";
             }
             else
             {
@@ -220,8 +272,12 @@
         finally
         {
             mostrarPopup = false;
+            tituloReview = string.Empty;
+            comentarioReview = string.Empty;
+            ratingSeleccionado = 0;
         }
     }
+
 
     private void SeleccionarRating(int valor)
     {

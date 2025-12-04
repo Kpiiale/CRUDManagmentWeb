@@ -1,36 +1,52 @@
 ﻿using CRUDManagmentWeb.Models.Review;
+using CRUDManagmentWeb.Services;
+using Microsoft.JSInterop;
+using System.Net.Http;
 
-namespace CRUDManagmentWeb.Services
+public class ReviewService : ApiServiceBase
 {
-    public class ReviewService
+    private const string BaseUrl = "https://localhost:7162/api/activities";
+
+    public ReviewService(HttpClient httpClient, IJSRuntime jsRuntime)
+        : base(httpClient, jsRuntime)
     {
-        private readonly HttpClient _http;
+    }
 
-        public ReviewService(HttpClient http)
+    public async Task<ActivityReviewsResponse?> GetByActivityAsync(int activityId)
+    {
+        return await _httpClient.GetFromJsonAsync<ActivityReviewsResponse>(
+            $"{BaseUrl}/{activityId}/reviews"
+        );
+    }
+
+    public async Task<ReviewDto?> AddAsync(int activityId, AddReviewRequest request)
+    {
+        await SetAuthHeaderAsync(); 
+
+        var response = await _httpClient.PostAsJsonAsync(
+            $"{BaseUrl}/{activityId}/reviews", request);
+
+        var content = await response.Content.ReadAsStringAsync();
+        Console.WriteLine($"POST review: {response.StatusCode} - {content}");
+
+        if (!response.IsSuccessStatusCode)
         {
-            _http = http;
+            await _jsRuntime.InvokeVoidAsync("alert",
+                $"Error al crear reseña: {response.StatusCode} - {content}");
+            return null;
         }
 
-        public async Task<ActivityReviewsResponse?> GetByActivityAsync(int activityId)
-        {
-            return await _http.GetFromJsonAsync<ActivityReviewsResponse>(
-                $"api/activities/{activityId}/reviews");
-        }
-        public async Task<ReviewDto?> AddAsync(int activityId, AddReviewRequest request)
-        {
-            var response = await _http.PostAsJsonAsync(
-                $"api/activities/{activityId}/reviews", request);
+        return await response.Content.ReadFromJsonAsync<ReviewDto>();
+    }
 
-            if (!response.IsSuccessStatusCode)
-                return null;
+    public async Task<bool> DeleteAsync(int reviewId)
+    {
+        await SetAuthHeaderAsync(); 
 
-            return await response.Content.ReadFromJsonAsync<ReviewDto>();
-        }
+        var response = await _httpClient.DeleteAsync(
+            $"{BaseUrl}/reviews/{reviewId}"
+        );
 
-        public async Task<bool> DeleteAsync(int reviewId)
-        {
-            var response = await _http.DeleteAsync($"api/activities/reviews/{reviewId}");
-            return response.IsSuccessStatusCode;
-        }
+        return response.IsSuccessStatusCode;
     }
 }
