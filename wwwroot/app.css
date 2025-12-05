@@ -69,18 +69,14 @@ body {
 
 .user-card {
     background: #ffffff;
-    border: 3px solid #000000;
+    border: 1px solid #000000;
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 8px 8px 0 #000000;
-    transition: all 0.2s ease;
+   
+    
 }
 
-    .user-card:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 10px 10px 0 #000000;
-    }
-
+    
 .user-header h2 {
     font-size: 1.75rem;
     font-weight: 900;
@@ -259,20 +255,17 @@ body {
 .main-card {
     text-align: center;
     background: #ffffff;
-    border: 3px solid #000000;
+    border: 1px solid #000000;
     padding: 40px;
     border-radius: 20px;
-    box-shadow: 8px 8px 0 #000000;
+   
     max-width: 600px;
     width: 100%;
     transition: all 0.2s ease;
     border-radius: 20px;
 }
 
-    .main-card:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 10px 10px 0 #000000;
-    }
+   
 
 .main-title {
     font-size: 2rem;
@@ -475,23 +468,21 @@ body {
     margin-right: auto;
 }
 
-/* Tarjeta */
 .activity-card {
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Mantiene contenido arriba y botones abajo */
+    justify-content: space-between; 
     background: #ffffff;
-    border: 3px solid #000000;
+    border: 1px solid #000000;
     padding: 40px;
     border-radius: 20px;
     max-width: 600px;
     width: 100%;
     text-align: left;
     transition: all 0.2s ease;
-    min-height: 220px; /* opcional, solo para uniformidad */
+    min-height: 220px; 
 }
 
-/* Texto truncado */
 .truncate {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -562,10 +553,9 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    backdrop-filter: blur(3px); /* efecto moderno */
+    backdrop-filter: blur(3px); 
 }
 
-/* Contenedor del popup */
 .modal-content {
     background: #ffffff;
     padding: 35px;
@@ -574,17 +564,15 @@ body {
     max-width: 550px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.25);
     animation: popupAppear 0.25s ease-out;
-    border: 3px solid #000000; /* estilo consistente con tus cards */
+    border: 3px solid #000000; 
 }
 
-    /* Título */
     .modal-content h2 {
         margin-bottom: 20px;
         text-align: center;
         font-weight: 800;
     }
 
-    /* Info del popup */
     .modal-content p {
         font-size: 1rem;
         margin-bottom: 12px;
@@ -592,7 +580,6 @@ body {
         line-height: 1.5;
     }
 
-    /* Botón de cerrar */
     .modal-content .btn-close {
         background: #C67F07;
         color: #fff;
@@ -615,7 +602,6 @@ body {
             box-shadow: 4px 4px 0 #000000;
         }
 
-/* Animación de aparición */
 @keyframes popupAppear {
     from {
         opacity: 0;
@@ -723,14 +709,12 @@ body {
     animation: fadeIn 0.4s ease-in-out;
 }
 
-    /* Título */
     .payment-card h3 {
         color: #333;
         font-size: 1.8rem;
         margin-bottom: 20px;
     }
 
-    /* Texto */
     .payment-card p {
         color: #555;
         font-size: 1rem;
@@ -738,7 +722,6 @@ body {
         line-height: 1.6;
     }
 
-    /* Botón principal (amarillo beeApp) */
     .payment-card .btn-primary {
         background-color: #f4b400;
         border: none;
@@ -755,7 +738,7 @@ body {
             transform: translateY(-2px);
         }
 
-/* Animación */
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -798,13 +781,11 @@ body {
     transition: 0.2s;
 }
 
-    /* Hover */
     .rating-input:hover {
         border-color: #ffcc00;
         background: #fff7d1;
     }
 
-    /* Cuando el input está enfocado */
     .rating-input:focus {
         outline: none;
         border-color: #ffb700;

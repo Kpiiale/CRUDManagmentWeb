@@ -5,7 +5,7 @@ using System.Net.Http;
 
 public class ReviewService : ApiServiceBase
 {
-    private const string BaseUrl = "https://localhost:7162/api/activities";
+    private const string BaseUrl = "https://beeapp-api-afefhphxaaf0hsfn.chilecentral-01.azurewebsites.net/api/activities";
 
     public ReviewService(HttpClient httpClient, IJSRuntime jsRuntime)
         : base(httpClient, jsRuntime)

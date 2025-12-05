@@ -6,7 +6,7 @@ namespace CRUDManagmentWeb.Services
 {
     public class ReservationService : ApiServiceBase
     {
-        private const string BaseUrl = "https://localhost:7162/api/Reservations";
+        private const string BaseUrl = "https://beeapp-api-afefhphxaaf0hsfn.chilecentral-01.azurewebsites.net/api/Reservations";
 
         public ReservationService(HttpClient httpClient, IJSRuntime jsRuntime)
             : base(httpClient, jsRuntime) { }

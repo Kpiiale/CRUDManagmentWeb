@@ -8,7 +8,7 @@ namespace CRUDManagmentWeb.Services
     public class PaymentService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://localhost:7162/api/Payments";
+        private const string BaseUrl = "https://beeapp-api-afefhphxaaf0hsfn.chilecentral-01.azurewebsites.net/api/Payments";
 
         public PaymentService(HttpClient httpClient)
         {
